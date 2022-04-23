@@ -8,6 +8,6 @@ This app aims to provide timely reminders and send push notifications to users w
 
 Using npm:
 
-    $ npm install later
+    $ npm install 
 
 
