@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heading, Input } from '@chakra-ui/react';
+import { Heading } from '@chakra-ui/react';
 import MedicationForm from './MedicationForm.jsx';
 
 function MedicationRecordForm() {

@@ -1,21 +1,49 @@
 import React, { useState } from 'react';
 import {
-  Input, Select, HStack, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Text,
+  Input, Select, HStack, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Text, Textarea,
 } from '@chakra-ui/react';
 import FrequencyScheduler from './FrequencyScheduler.jsx';
+import TimingScheduler from './TimingScheduler.jsx';
+import SubmitForm from './SubmitForm.jsx';
 
 const MedicationForm = () => {
+  const initialFreqValues = {
+    repeatFrequency: 'hourly',
+    qHourInterval: '',
+    qDayInterval: '',
+    qWeekInterval: '',
+    qMonthInterval: '',
+  };
+
+  const startEndDates = {
+    startDate: new Date(),
+    endDate: new Date(),
+  };
+
+  const [dates, setStartEndDates] = useState(startEndDates);
+  const [frequencyInput, setFrequency] = useState(initialFreqValues);
+  const [storedDays, setDays] = useState([]);
+
+  // frequency input data
+  const frequencyData = {
+    freqOccurence: frequencyInput,
+    numberOfDaysWeek: storedDays,
+    startingDate: dates.startDate,
+    endingDate: dates.endDate,
+  };
+
+  // rest of the data
   const initialFormValues = {
     medicationName: '',
     medDose: '',
     doseUnit: '',
     medQuantity: '',
+    medInstructions: '',
+    frequencyInfo: frequencyData,
   };
   const [formInput, setFormInput] = useState(initialFormValues);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(e);
     setFormInput({ ...formInput, [name]: value });
   };
 
@@ -42,18 +70,10 @@ const MedicationForm = () => {
     </HStack>
   );
 
-  const QuantityInput = () => (
-    <HStack>
-      <NumberInput name="medQuantity" value={formInput.medQuantity} onChange={(valueString) => setFormInput({ ...formInput, medQuantity: valueString })} min={0}>
-        <NumberInputField type="number" />
-        <NumberInputStepper>
-          <NumberIncrementStepper />
-          <NumberDecrementStepper />
-        </NumberInputStepper>
-      </NumberInput>
-      <Text>{formInput.doseUnit}</Text>
-    </HStack>
-  );
+  // const QuantityInput = () => (
+
+  // );
+
   console.log(formInput);
   return (
     <>
@@ -64,10 +84,27 @@ const MedicationForm = () => {
       <DropDownDose />
 
       <label className="form-label" size="sm"> Quantity:</label>
-      <QuantityInput />
+      <HStack>
+        <NumberInput name="medQuantity" value={formInput.medQuantity} onChange={(valueString) => setFormInput({ ...formInput, medQuantity: valueString })} min={0}>
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+        <Text>{formInput.doseUnit}</Text>
+      </HStack>
 
       <label className="form-label" size="sm"> Frequency:</label>
-      <FrequencyScheduler />
+      <FrequencyScheduler dates={dates} setStartEndDates={setStartEndDates} setFrequency={setFrequency} frequencyInput={frequencyInput} setDays={setDays} storedDays={storedDays} />
+
+      <label className="form-label" size="sm"> Timing:</label>
+      <TimingScheduler />
+
+      <label className="form-label" size="sm"> Special Instructions:</label>
+      <Textarea name="medInstructions" value={formInput.medInstructions} onChange={handleChange}> </Textarea>
+
+      <SubmitForm formInput={formInput} />
     </>
   );
 };

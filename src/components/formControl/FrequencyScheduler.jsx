@@ -5,56 +5,46 @@ import {
 } from '@chakra-ui/react';
 import '../../../node_modules/react-datepicker/dist/react-datepicker.css';
 
-const DaysDisplay = () => {
-  const [storedDays, setDays] = useState([]);
-
-  const handleClickDays = (e) => {
-    console.log(e.target.className);
-    if (e.target.className.includes('clicked')) {
-      const newStoredDays = storedDays.filter((day) => day !== e.target.value);
-      setDays(newStoredDays);
-      e.target.classList.remove('clicked');
-    }
-    else {
-      setDays((prevDays) => [...prevDays, e.target.value]);
-      e.target.classList.add('clicked');
-    }
-  };
-
-  const allDaysWeek = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
-  const buttonDay = allDaysWeek.map((day) => (
-    <Button mr={1} onClick={handleClickDays} value={day}>
-      {day}
-    </Button>
-  ));
-
-  return buttonDay;
-};
-
-function FrequencyScheduler() {
-  const initialFreqValues = {
-    repeatFrequency: 'hourly',
-    qHourInterval: '',
-    qDayInterval: '',
-    qWeekInterval: '',
-    qMonthInterval: '',
-
-  };
-  const [startDate, setStartDate] = useState(new Date());
-  const [frequencyInput, setFrequency] = useState(initialFreqValues);
-
+function FrequencyScheduler({
+  dates, setStartEndDates, frequencyInput, setFrequency, storedDays, setDays,
+}) {
   // to handle frequency input control change
   const handleFreqChange = (e) => {
     const { name, value } = e.target;
     setFrequency({ ...frequencyInput, [name]: value });
   };
 
+  // to return buttons that shows all the days of a week
+  const DaysDisplay = () => {
+    const handleClickDays = (e) => {
+      console.log(e.target.className);
+      if (e.target.className.includes('clicked')) {
+        const newStoredDays = storedDays.filter((day) => day !== e.target.value);
+        setDays(newStoredDays);
+        e.target.classList.remove('clicked');
+      }
+      else {
+        setDays((prevDays) => [...prevDays, e.target.value]);
+        e.target.classList.add('clicked');
+      }
+    };
+
+    const allDaysWeek = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
+    const buttonDay = allDaysWeek.map((day) => (
+      <Button mr={1} onClick={handleClickDays} value={day}>
+        {day}
+      </Button>
+    ));
+
+    return buttonDay;
+  };
+
   const HourlyOutput = () => (
     <>
-      <GridItem colSpan={1}>
+      <GridItem rowSpan={2} colSpan={1}>
         <Text>Every</Text>
       </GridItem>
-      <GridItem colSpan={2}>
+      <GridItem rowSpan={2} colSpan={2}>
         <NumberInput name="qInterval" value={frequencyInput.qHourInterval} onChange={(valueString) => setFrequency({ ...frequencyInput, qHourInterval: valueString })} min={1} max={12}>
           <NumberInputField type="number" />
           <NumberInputStepper>
@@ -63,7 +53,7 @@ function FrequencyScheduler() {
           </NumberInputStepper>
         </NumberInput>
       </GridItem>
-      <GridItem colSpan={1}>
+      <GridItem rowSpan={2} colSpan={1}>
         <Text>Hours(s)</Text>
       </GridItem>
     </>
@@ -154,7 +144,11 @@ function FrequencyScheduler() {
     return output;
   };
 
-  console.log(frequencyInput.repeatFrequency);
+  const [endDateOption, selectEndOption] = useState('never');
+
+  const handleEndDate = (e) => {
+    selectEndOption(e.target.value);
+  };
 
   return (
     <>
@@ -167,10 +161,11 @@ function FrequencyScheduler() {
         </GridItem>
         <GridItem rowSpan={1} colSpan={4}>
           <DatePicker
+            name="startDate"
             wrapperClassName="datePicker"
             id="startDate"
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
+            selected={dates.startDate}
+            onChange={(date) => setStartEndDates({ ...dates, startDate: date })}
             isClearable
             showYearDropdown
             scrollableMonthYearDropdown
@@ -189,6 +184,29 @@ function FrequencyScheduler() {
         </GridItem>
         {/* depending on the repeat frequency, different controls will appear */}
         <VariedFreqControl />
+        <GridItem rowSpan={1} colSpan={1} mb={2}>
+          <label htmlFor="startDate"> End date: </label>
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={2}>
+          <Select name="selectEndDate" onChange={handleEndDate} value={endDateOption}>
+            <option value="never"> Never</option>
+            <option value="onDate"> On date</option>
+          </Select>
+        </GridItem>
+        {endDateOption === 'onDate' && (
+        <GridItem rowSpan={1} colSpan={2}>
+          <DatePicker
+            name="endDate"
+            wrapperClassName="datePicker"
+            id="startDate"
+            selected={dates.endDate}
+            onChange={(date) => setStartEndDates({ ...dates, endDate: date })}
+            isClearable
+            showYearDropdown
+            scrollableMonthYearDropdown
+          />
+        </GridItem>
+        )}
       </Grid>
     </>
 
