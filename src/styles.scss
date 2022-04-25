@@ -1,3 +1,17 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
-  background-color: pink;
+  background-color: #f5f9fa;
+}
+
+.datePicker {
+  width: 100%;
+}
+
+.clicked {
+  background-color: red !important;
 }
