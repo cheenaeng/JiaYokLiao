@@ -10,6 +10,7 @@ const MedicationForm = () => {
   const initialFreqValues = {
     repeatFrequency: 'hourly',
     qHourInterval: '',
+    qTimesInterval: '',
     qDayInterval: '',
     qWeekInterval: '',
     qMonthInterval: '',
@@ -19,7 +20,7 @@ const MedicationForm = () => {
     startDate: new Date(),
     endDate: new Date(),
   };
-
+  const [medTimings, setMedTiming] = useState({});
   const [dates, setStartEndDates] = useState(startEndDates);
   const [frequencyInput, setFrequency] = useState(initialFreqValues);
   const [storedDays, setDays] = useState([]);
@@ -39,13 +40,16 @@ const MedicationForm = () => {
     doseUnit: '',
     medQuantity: '',
     medInstructions: '',
-    frequencyInfo: frequencyData,
   };
   const [formInput, setFormInput] = useState(initialFormValues);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormInput({ ...formInput, [name]: value });
   };
+
+  console.log(formInput);
+
+  console.log(medTimings);
 
   // to create drop down for dose dropdown
   const DropDownDose = () => (
@@ -75,6 +79,7 @@ const MedicationForm = () => {
   // );
 
   console.log(formInput);
+  console.log(medTimings);
   return (
     <>
       <label className="form-label" size="sm"> Medication Name: </label>
@@ -99,7 +104,7 @@ const MedicationForm = () => {
       <FrequencyScheduler dates={dates} setStartEndDates={setStartEndDates} setFrequency={setFrequency} frequencyInput={frequencyInput} setDays={setDays} storedDays={storedDays} />
 
       <label className="form-label" size="sm"> Timing:</label>
-      <TimingScheduler />
+      <TimingScheduler medTimings={medTimings} setMedTiming={setMedTiming} />
 
       <label className="form-label" size="sm"> Special Instructions:</label>
       <Textarea name="medInstructions" value={formInput.medInstructions} onChange={handleChange}> </Textarea>

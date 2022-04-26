@@ -1,4 +1,4 @@
-.import { Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize';
 import url from 'url';
 import allConfig from '../config/config.js';
 import initIndicationModel from './Indication.mjs';
@@ -43,14 +43,13 @@ db.MedicationRecord = initMedicationRecordModel(sequelize, Sequelize.DataTypes);
 db.MedicationRecord.belongsTo(db.User);
 db.User.hasMany(db.MedicationRecord);
 
-//one to one relationship
-db.MedicationRecord.hasOne(db.MedicationDetail)
-db.MedicationDetail.belongsTo(db.MedicationRecord)
+// one to one relationship
+db.MedicationRecord.hasOne(db.MedicationDetail);
+db.MedicationDetail.belongsTo(db.MedicationRecord);
 
-//indication and medication detail tables are linked by medication_indication table 
+// indication and medication detail tables are linked by medication_indication table
 db.Indication.belongsToMany(db.MedicationDetail, { through: 'medication_indications' });
 db.MedicationDetail.belongsToMany(db.Indication, { through: 'medication_indications' });
-
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

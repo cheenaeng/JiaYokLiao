@@ -44,7 +44,7 @@ function FrequencyScheduler({
       <GridItem rowSpan={2} colSpan={1}>
         <Text>Every</Text>
       </GridItem>
-      <GridItem rowSpan={2} colSpan={2}>
+      <GridItem rowSpan={1} colSpan={2}>
         <NumberInput name="qInterval" value={frequencyInput.qHourInterval} onChange={(valueString) => setFrequency({ ...frequencyInput, qHourInterval: valueString })} min={1} max={12}>
           <NumberInputField type="number" />
           <NumberInputStepper>
@@ -53,8 +53,20 @@ function FrequencyScheduler({
           </NumberInputStepper>
         </NumberInput>
       </GridItem>
-      <GridItem rowSpan={2} colSpan={1}>
+      <GridItem rowSpan={1} colSpan={1}>
         <Text>Hours(s)</Text>
+      </GridItem>
+      <GridItem rowSpan={1} colSpan={2}>
+        <NumberInput name="qTimesInterval" value={frequencyInput.qTimesInterval} onChange={(valueString) => setFrequency({ ...frequencyInput, qTimesInterval: valueString })} min={1} max={12}>
+          <NumberInputField type="number" />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+      </GridItem>
+      <GridItem rowSpan={1} colSpan={1}>
+        <Text>times(s) a day</Text>
       </GridItem>
     </>
   );
@@ -74,7 +86,7 @@ function FrequencyScheduler({
         </NumberInput>
       </GridItem>
       <GridItem colSpan={1}>
-        <Text>week(s)</Text>
+        <Text>day(s)</Text>
       </GridItem>
     </>
   );
@@ -176,7 +188,7 @@ function FrequencyScheduler({
         </GridItem>
         <GridItem rowSpan={1} colSpan={4}>
           <Select name="repeatFrequency" onChange={handleFreqChange} value={frequencyInput.repeatFrequency}>
-            <option value="hourly"> Hourly</option>
+            <option value="hourly"> Hourly or 'X' times a day</option>
             <option value="daily"> Daily</option>
             <option value="weekly"> Weekly</option>
             <option value="monthly"> Monthly</option>
