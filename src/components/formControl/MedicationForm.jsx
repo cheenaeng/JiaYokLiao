@@ -20,11 +20,13 @@ const MedicationForm = () => {
     startDate: new Date(),
     endDate: new Date(),
   };
-  const [medTimings, setMedTiming] = useState({});
+  const [medTimings, setMedTiming] = useState([]);
   const [dates, setStartEndDates] = useState(startEndDates);
   const [frequencyInput, setFrequency] = useState(initialFreqValues);
   const [storedDays, setDays] = useState([]);
   const [endDateOption, selectEndOption] = useState('never');
+
+  console.log(medTimings);
 
   // frequency input data
   const frequencyData = {
@@ -48,10 +50,6 @@ const MedicationForm = () => {
     const { name, value } = e.target;
     setFormInput({ ...formInput, [name]: value });
   };
-
-  console.log(formInput);
-
-  console.log(medTimings);
 
   // to create drop down for dose dropdown
   const DropDownDose = () => (
