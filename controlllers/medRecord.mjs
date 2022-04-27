@@ -1,5 +1,6 @@
-import later from '@breejs/later';
 import { format, compareAsc, parseISO } from 'date-fns';
+import path from 'path';
+import Bree from 'bree';
 
 export default function initMedRecordController(db) {
   const addFormData = async (request, response) => {
@@ -8,6 +9,16 @@ export default function initMedRecordController(db) {
       const {
         medicationName, medDose, medQuantity, medInstructions, frequencyData, medTimings,
       } = request.body;
+
+      const basedOnTimeSchedule = medTimings.map((timing) => {
+        const newSchedule = new Bree({
+          name: 'hourly schedule',
+          interval: `at ${timing}`,
+        });
+        return newSchedule;
+      });
+
+      console.log(basedOnTimeSchedule);
 
       // general function that can be used for all cases(hourly,daily,weekly)
       // const allMedTimings = Object.values(medTimings);
@@ -28,7 +39,6 @@ export default function initMedRecordController(db) {
       // }
 
       const COMMAND = frequencyData.freqOccurence.repeatFrequency;
-      let schedule;
       switch (COMMAND) {
         case 'hourly':
 

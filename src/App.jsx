@@ -7,6 +7,9 @@ const later = require('@breejs/later');
 
 export default function App() {
   const input = 1;
+  const schedule = later.parse.recur().on('08:00:00', '09:00:00').time();
+
+  console.log(schedule);
 
   return (
     <ChakraProvider>
