@@ -2,9 +2,12 @@ import React from 'react';
 import { Button } from '@chakra-ui/react';
 import axios from 'axios';
 
-function SubmitForm({ formInput }) {
+function SubmitForm({ formInput, frequencyData, medTimings }) {
   const submitFormData = () => {
-    axios.post('/formData', formInput)
+    const frequencyTimings = { medTimings };
+    const frequencyInfo = { frequencyData };
+    const allData = { ...formInput, ...frequencyInfo, ...frequencyTimings };
+    axios.post('/formData', allData)
       .then((response) => {
         console.log(response.data);
       });

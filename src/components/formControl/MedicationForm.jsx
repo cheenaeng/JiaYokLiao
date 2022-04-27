@@ -24,11 +24,13 @@ const MedicationForm = () => {
   const [dates, setStartEndDates] = useState(startEndDates);
   const [frequencyInput, setFrequency] = useState(initialFreqValues);
   const [storedDays, setDays] = useState([]);
+  const [endDateOption, selectEndOption] = useState('never');
 
   // frequency input data
   const frequencyData = {
     freqOccurence: frequencyInput,
     numberOfDaysWeek: storedDays,
+    isEndDate: endDateOption,
     startingDate: dates.startDate,
     endingDate: dates.endDate,
   };
@@ -101,7 +103,7 @@ const MedicationForm = () => {
       </HStack>
 
       <label className="form-label" size="sm"> Frequency:</label>
-      <FrequencyScheduler dates={dates} setStartEndDates={setStartEndDates} setFrequency={setFrequency} frequencyInput={frequencyInput} setDays={setDays} storedDays={storedDays} />
+      <FrequencyScheduler dates={dates} setStartEndDates={setStartEndDates} setFrequency={setFrequency} frequencyInput={frequencyInput} setDays={setDays} storedDays={storedDays} endDateOption={endDateOption} selectEndOption={selectEndOption} />
 
       <label className="form-label" size="sm"> Timing:</label>
       <TimingScheduler medTimings={medTimings} setMedTiming={setMedTiming} />
@@ -109,7 +111,7 @@ const MedicationForm = () => {
       <label className="form-label" size="sm"> Special Instructions:</label>
       <Textarea name="medInstructions" value={formInput.medInstructions} onChange={handleChange}> </Textarea>
 
-      <SubmitForm formInput={formInput} />
+      <SubmitForm formInput={formInput} frequencyData={frequencyData} medTimings={medTimings} />
     </>
   );
 };

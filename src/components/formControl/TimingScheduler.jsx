@@ -1,69 +1,62 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Box, Button, HStack, Select,
+  Box, Button, HStack, Select, Input,
 } from '@chakra-ui/react';
 import TimePicker from 'react-time-picker';
 
 function TimingScheduler({ medTimings, setMedTiming }) {
-  const [timingContent, addTimingContent] = useState([]);
-  const [timingIndex, changeTimingIndex] = useState(0);
-  const initialState = {};
-  const [storedTiming, addTiming] = useState(initialState);
-  const [changesTracked, trackchange] = useState(0);
-  const [removedTiming, trackRemovedTiming] = useState(0);
+  const [timingEls, changeTimingEls] = useState([]);
 
-  const Timing = ({ timeName }) => {
+  // to store each of the value when the value of the time changesm, medTimings is an object
+
+  // each of the timing div has a temporary time value that is changed when the input is changed
+  const [timeIndex, changeIndex] = useState(0);
+  const [tempStoreTiming, storeTimeTemp] = useState({});
+
+  const Timing = ({ timingIndex }) => {
     const [tempTimeValue, onChangeTime] = useState('10:00');
-    const timeDisplay = useRef();
-
+    const timeDisplay = useRef(tempTimeValue);
+    const copyTimingEls = [...timingEls];
+    copyTimingEls[timingIndex - 1] = timeDisplay.current;
     useEffect(() => {
-      const { name, value } = timeDisplay.current.props;
-      addTiming({ ...storedTiming, [name]: value });
-      trackchange((num) => num += 1);
+      tempStoreTiming[`time-${timingIndex}`] = timeDisplay.current.props.value;
+      setMedTiming({ ...tempStoreTiming });
     }, [tempTimeValue]);
+
     return (
-      <Box>
-        <TimePicker ref={timeDisplay} onChange={onChangeTime} name={timeName} value={tempTimeValue} clockIcon={null} disableClock />
-      </Box>
+      <>
+        <TimePicker ref={timeDisplay} onChange={onChangeTime} name={`time-${timingIndex}`} value={tempTimeValue} clockIcon={null} disableClock />
+      </>
     );
   };
 
-  useEffect(() => {
-    setMedTiming({ ...medTimings, ...storedTiming });
-  }, [changesTracked]);
-
-  console.log(storedTiming);
-
-  useEffect(() => {
-    setMedTiming({ ...storedTiming });
-  }, [removedTiming]);
-
-  const handleAddTiming = () => {
-    changeTimingIndex((index) => index += 1);
-    addTimingContent((prevTiming) => [...prevTiming, (<Timing timeName={`time-${timingIndex}`} />)]);
+  const addNewTiming = () => {
+    const newTimeindexCopy = timeIndex + 1;
+    changeIndex(newTimeindexCopy);
+    changeTimingEls((prevContent) => [...prevContent, (<Timing timingIndex={newTimeindexCopy} />)]);
+    tempStoreTiming[`time-${newTimeindexCopy}`] = '';
   };
 
-  console.log(timingIndex);
+  const removeTiming = () => {
+    const reducedTimeIndex = timeIndex - 1;
+    changeIndex(reducedTimeIndex);
+    const contentCopy = [...timingEls];
+    contentCopy.pop();
+    changeTimingEls(contentCopy);
 
-  const handleRemoveTiming = () => {
-    const indexTime = timingIndex - 1;
-    const storedTimingCopy = { ...storedTiming };
-    delete storedTimingCopy[`time-${indexTime}`];
-    addTiming(storedTimingCopy);
-    setMedTiming({ ...storedTiming });
-    changeTimingIndex((index) => index -= 1);
-    const updatedTimingContent = [...timingContent];
-    updatedTimingContent.pop();
-    addTimingContent(updatedTimingContent);
-    trackRemovedTiming((num) => num += 1);
+    delete tempStoreTiming[`time-${timeIndex}`];
+    setMedTiming({ ...tempStoreTiming });
   };
-  console.log(storedTiming);
 
   return (
     <HStack>
-      <Button onClick={() => { handleAddTiming(); }}> +</Button>
-      {timingContent}
-      {timingContent.length >= 1 && <Button onClick={() => { handleRemoveTiming(); }}>-</Button>}
+      <Button onClick={addNewTiming}>
+        +
+      </Button>
+      {timingEls}
+      <Button onClick={removeTiming}>
+        -
+      </Button>
     </HStack>
 
   );

@@ -6,7 +6,7 @@ import {
 import '../../../node_modules/react-datepicker/dist/react-datepicker.css';
 
 function FrequencyScheduler({
-  dates, setStartEndDates, frequencyInput, setFrequency, storedDays, setDays,
+  dates, setStartEndDates, frequencyInput, setFrequency, storedDays, setDays, endDateOption, selectEndOption,
 }) {
   // to handle frequency input control change
   const handleFreqChange = (e) => {
@@ -155,8 +155,6 @@ function FrequencyScheduler({
     }
     return output;
   };
-
-  const [endDateOption, selectEndOption] = useState('never');
 
   const handleEndDate = (e) => {
     selectEndOption(e.target.value);
