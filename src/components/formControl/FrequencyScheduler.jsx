@@ -13,7 +13,7 @@ function FrequencyScheduler({
     const { name, value } = e.target;
     setFrequency({ ...frequencyInput, [name]: value });
   };
-  const allDaysWeek = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
+  const allDaysWeek = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'];
   const initialClickedStatus = allDaysWeek.map((day) => false);
   const [clickStatus, setClickStatus] = useState(initialClickedStatus);
 
@@ -24,13 +24,13 @@ function FrequencyScheduler({
         const newStoredDays = storedDays.filter((day) => day !== e.target.value);
         setDays(newStoredDays);
         const copyClickedStatus = [...clickStatus];
-        copyClickedStatus[e.target.value - 1] = false;
+        copyClickedStatus[e.target.value] = false;
         setClickStatus(copyClickedStatus);
       }
       else {
         setDays((prevDays) => [...prevDays, e.target.value]);
         const copyClickedStatus = [...clickStatus];
-        copyClickedStatus[e.target.value - 1] = true;
+        copyClickedStatus[e.target.value] = true;
         console.log(copyClickedStatus);
         setClickStatus(copyClickedStatus);
       }
@@ -38,7 +38,7 @@ function FrequencyScheduler({
     console.log(clickStatus[3]);
 
     const buttonDay = allDaysWeek.map((day, index) => (
-      <Button mr={1} onClick={handleClickDays} value={index + 1} className={clickStatus[index] && 'clicked'}>
+      <Button mr={1} onClick={handleClickDays} value={index} className={clickStatus[index] && 'clicked'}>
         {day}
       </Button>
     ));

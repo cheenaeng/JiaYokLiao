@@ -31,13 +31,14 @@ export default function initMedRecordController(db) {
       } = request.body;
 
       // for end date stored as {ddEnd: , mmEnd: , yyEnd:}
-      const consolidatedFrequency = {
+      const formattedFrequency = {
         timing: [],
         days: '',
         weekDays: '',
         monthlyInterval: '',
         endDate: convertDate(frequencyData?.endingDate),
         startDate: convertDate(frequencyData.startingDate),
+        rawData: frequencyData,
       };
 
       const formatedTime = medTimings.map((timing) => {
@@ -46,14 +47,14 @@ export default function initMedRecordController(db) {
         return formatedTimeInHhMm;
       });
 
-      updateConsolidatedFreq(frequencyData, consolidatedFrequency, formatedTime);
+      updateConsolidatedFreq(frequencyData, formattedFrequency, formatedTime);
 
       const newRecord = await db.MedicationRecord.create({
         medicationName,
         dose: medDose,
         quantity: medQuantity,
         specialInstructions: medInstructions,
-        frequency: consolidatedFrequency,
+        frequency: formattedFrequency,
       });
 
       response.send({ newRecord });
