@@ -12,32 +12,14 @@ const MedicationForm = () => {
     qHourInterval: '',
     qTimesInterval: '',
     qDayInterval: '',
-    qWeekInterval: '',
     qMonthInterval: '',
   };
 
   const startEndDates = {
     startDate: new Date(),
-    endDate: new Date(),
-  };
-  const [medTimings, setMedTiming] = useState([]);
-  const [dates, setStartEndDates] = useState(startEndDates);
-  const [frequencyInput, setFrequency] = useState(initialFreqValues);
-  const [storedDays, setDays] = useState([]);
-  const [endDateOption, selectEndOption] = useState('never');
-
-  console.log(medTimings);
-
-  // frequency input data
-  const frequencyData = {
-    freqOccurence: frequencyInput,
-    numberOfDaysWeek: storedDays,
-    isEndDate: endDateOption,
-    startingDate: dates.startDate,
-    endingDate: dates.endDate,
+    endDate: '',
   };
 
-  // rest of the data
   const initialFormValues = {
     medicationName: '',
     medDose: '',
@@ -45,7 +27,25 @@ const MedicationForm = () => {
     medQuantity: '',
     medInstructions: '',
   };
+  const [medTimings, setMedTiming] = useState([]);
+  const [dates, setStartEndDates] = useState(startEndDates);
+  const [frequencyInput, setFrequency] = useState(initialFreqValues);
+  const [storedDays, setDays] = useState([]);
+  const [endDateOption, selectEndOption] = useState('never');
   const [formInput, setFormInput] = useState(initialFormValues);
+
+  console.log(medTimings);
+
+  // frequency input data
+  const frequencyData = {
+    freqOccurence: frequencyInput,
+    numberOfDaysWeek: storedDays,
+    startingDate: dates.startDate,
+    endingDate: dates.endDate,
+  };
+
+  // rest of the data
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormInput({ ...formInput, [name]: value });
@@ -73,10 +73,6 @@ const MedicationForm = () => {
       </Select>
     </HStack>
   );
-
-  // const QuantityInput = () => (
-
-  // );
 
   console.log(formInput);
   console.log(medTimings);

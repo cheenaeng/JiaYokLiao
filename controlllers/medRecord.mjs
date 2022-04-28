@@ -1,6 +1,26 @@
-import { format, compareAsc, parseISO } from 'date-fns';
-import path from 'path';
-import Bree from 'bree';
+import {
+  format, compareAsc, parseISO, getDate, getMonth, getYear,
+} from 'date-fns';
+
+// helper function to convert date
+const convertDate = (date) => {
+  const parsedDate = parseISO(date);
+
+  const convertedDate = {
+    dd: getDate(parsedDate),
+    mm: getMonth(parsedDate),
+    yy: getYear(parsedDate),
+
+  };
+  return convertedDate;
+};
+
+const updateConsolidatedFreq = (data, frequencyTable, freqTiming) => {
+  frequencyTable.days = data.freqOccurence?.qDayInterval;
+  frequencyTable.weekDays = data?.numberOfDaysWeek;
+  frequencyTable.monthlyInterval = data.freqOccurence?.qMonthInterval;
+  frequencyTable.timing = freqTiming;
+};
 
 export default function initMedRecordController(db) {
   const addFormData = async (request, response) => {
@@ -10,54 +30,30 @@ export default function initMedRecordController(db) {
         medicationName, medDose, medQuantity, medInstructions, frequencyData, medTimings,
       } = request.body;
 
-      const basedOnTimeSchedule = medTimings.map((timing) => {
-        const newSchedule = new Bree({
-          name: 'hourly schedule',
-          interval: `at ${timing}`,
-        });
-        return newSchedule;
+      // for end date stored as {ddEnd: , mmEnd: , yyEnd:}
+      const consolidatedFrequency = {
+        timing: [],
+        days: '',
+        weekDays: '',
+        monthlyInterval: '',
+        endDate: convertDate(frequencyData?.endingDate),
+        startDate: convertDate(frequencyData.startingDate),
+      };
+
+      const formatedTime = medTimings.map((timing) => {
+        const timingSplit = timing.split(':');
+        const formatedTimeInHhMm = { mm: timingSplit[1], hh: timingSplit[0] };
+        return formatedTimeInHhMm;
       });
 
-      console.log(basedOnTimeSchedule);
-
-      // general function that can be used for all cases(hourly,daily,weekly)
-      // const allMedTimings = Object.values(medTimings);
-      // const timingSchedule = allMedTimings.map((timing) => {
-      //   const splittedTimes = timing.split(':');
-      //   return ({ h: [...splittedTimes[0]], m: [splittedTimes[1]] });
-      // });
-
-      // // if end date is provided then add the exception date
-      // if (frequencyData.isEndDate !== 'never') {
-      //   const parsedEndDate = parseISO(frequencyData.endingDate);
-      //   // this is to create the date where the schedule is no longer valid, aka end date
-      //   const exceptionTiming = [{ D: [format(parsedEndDate, 'd')], M: [format(parsedEndDate, 'M')], Y: [format(parsedEndDate, 'yyyy')] }];
-      //   const finalTimingSchedule = {
-      //     schedules: timingSchedule, exceptions: exceptionTiming,
-      //   };
-      //   console.log(finalTimingSchedule);
-      // }
-
-      const COMMAND = frequencyData.freqOccurence.repeatFrequency;
-      switch (COMMAND) {
-        case 'hourly':
-
-          break;
-
-        default:
-          schedule = `${COMMAND} undefined`;
-      }
-
-      console.log(schedule);
-
-      const medScheduleTimings = { medTimings };
+      updateConsolidatedFreq(frequencyData, consolidatedFrequency, formatedTime);
 
       const newRecord = await db.MedicationRecord.create({
         medicationName,
         dose: medDose,
         quantity: medQuantity,
         specialInstructions: medInstructions,
-        frequency: { ...frequencyData, ...medScheduleTimings },
+        frequency: consolidatedFrequency,
       });
 
       response.send({ newRecord });
@@ -67,7 +63,18 @@ export default function initMedRecordController(db) {
     }
   };
 
+  const findAllMedRecord = async (request, response) => {
+    try {
+      const allRecords = await db.MedicationRecord.findAll();
+
+      response.send({ allRecords });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
-    addFormData,
+    addFormData, findAllMedRecord,
   };
 }

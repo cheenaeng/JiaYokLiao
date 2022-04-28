@@ -13,31 +13,40 @@ function FrequencyScheduler({
     const { name, value } = e.target;
     setFrequency({ ...frequencyInput, [name]: value });
   };
+  const allDaysWeek = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
+  const initialClickedStatus = allDaysWeek.map((day) => false);
+  const [clickStatus, setClickStatus] = useState(initialClickedStatus);
 
   // to return buttons that shows all the days of a week
   const DaysDisplay = () => {
     const handleClickDays = (e) => {
-      console.log(e.target.className);
-      if (e.target.className.includes('clicked')) {
+      if (storedDays.includes(e.target.value)) {
         const newStoredDays = storedDays.filter((day) => day !== e.target.value);
         setDays(newStoredDays);
-        e.target.classList.remove('clicked');
+        const copyClickedStatus = [...clickStatus];
+        copyClickedStatus[e.target.value - 1] = false;
+        setClickStatus(copyClickedStatus);
       }
       else {
         setDays((prevDays) => [...prevDays, e.target.value]);
-        e.target.classList.add('clicked');
+        const copyClickedStatus = [...clickStatus];
+        copyClickedStatus[e.target.value - 1] = true;
+        console.log(copyClickedStatus);
+        setClickStatus(copyClickedStatus);
       }
     };
+    console.log(clickStatus[3]);
 
-    const allDaysWeek = ['Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
-    const buttonDay = allDaysWeek.map((day) => (
-      <Button mr={1} onClick={handleClickDays} value={day}>
+    const buttonDay = allDaysWeek.map((day, index) => (
+      <Button mr={1} onClick={handleClickDays} value={index + 1} className={clickStatus[index] && 'clicked'}>
         {day}
       </Button>
     ));
 
     return buttonDay;
   };
+
+  console.log(storedDays);
 
   const HourlyOutput = () => (
     <>
@@ -77,7 +86,7 @@ function FrequencyScheduler({
         <Text>Every</Text>
       </GridItem>
       <GridItem colSpan={2}>
-        <NumberInput name="qWeekInterval" value={frequencyInput.qWeekInterval} onChange={(valueString) => setFrequency({ ...frequencyInput, qWeekInterval: valueString })} min={1}>
+        <NumberInput name="qDayInterval" value={frequencyInput.qDayInterval} onChange={(valueString) => setFrequency({ ...frequencyInput, qDayInterval: valueString })} min={1}>
           <NumberInputField type="number" />
           <NumberInputStepper>
             <NumberIncrementStepper />
@@ -93,21 +102,6 @@ function FrequencyScheduler({
 
   const WeeklyOutput = () => (
     <>
-      <GridItem colSpan={1}>
-        <Text>Every</Text>
-      </GridItem>
-      <GridItem colSpan={2}>
-        <NumberInput name="qDayInterval" value={frequencyInput.qDayInterval} onChange={(valueString) => setFrequency({ ...frequencyInput, qDayInterval: valueString })} min={1}>
-          <NumberInputField type="number" />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-      </GridItem>
-      <GridItem colSpan={1}>
-        <Text>week(s)</Text>
-      </GridItem>
       <GridItem colSpan={4}>
         <DaysDisplay />
       </GridItem>

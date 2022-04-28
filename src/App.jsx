@@ -1,20 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChakraProvider, Container } from '@chakra-ui/react';
+
 import WeeklySchedule from './components/WeeklySchedule.jsx';
 import MedicationRecordForm from './components/formControl/MedicationRecordForm.jsx';
-
-const later = require('@breejs/later');
+import DisplayMedSchedule from './components/DisplayMedSchedule.jsx';
 
 export default function App() {
-  const input = 1;
-  const schedule = later.parse.recur().on('08:00:00', '09:00:00').time();
-
-  console.log(schedule);
-
+  const [allMedRecords, setMedRecords] = useState([]);
+  console.log(allMedRecords);
   return (
     <ChakraProvider>
       <Container>
         <WeeklySchedule />
+        <DisplayMedSchedule allMedRecords={allMedRecords} setMedRecords={setMedRecords} />
         <MedicationRecordForm />
 
       </Container>

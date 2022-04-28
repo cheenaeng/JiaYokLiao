@@ -10,4 +10,5 @@ export default function routes(app) {
   });
 
   app.post('/formData', MedRecord.addFormData);
+  app.get('/allMeds', MedRecord.findAllMedRecord);
 }
