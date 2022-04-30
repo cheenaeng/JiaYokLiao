@@ -5,9 +5,9 @@
   "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "env-cmd -f ./.env webpack --config webpack_conf/webpack.prod.js",
-    "start": "env-cmd -f ./.env node index.mjs",
-    "watch": "env-cmd -f ./.env nodemon index.mjs"
+    "build": " webpack --config webpack_conf/webpack.prod.js",
+    "start": " node index.mjs",
+    "watch": " nodemon index.mjs"
   },
   "repository": {
     "type": "git",
