@@ -2,6 +2,10 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import methodOverride from 'method-override';
 import bindRoutes from './routes.mjs';
+import admin from 'firebase-admin'
+
+import 'dotenv/config'
+import { applicationDefault } from 'firebase-admin/app';
 
 // Initialise Express instance
 const app = express();
@@ -56,3 +60,8 @@ bindRoutes(app);
 // Set Express to listen on the given port
 const PORT = process.env.PORT || 3004;
 app.listen(PORT);
+
+
+admin.initializeApp({
+  credential: applicationDefault(),
+});
