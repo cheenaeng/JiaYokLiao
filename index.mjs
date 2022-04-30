@@ -3,6 +3,7 @@ import express from 'express';
 import methodOverride from 'method-override';
 import bindRoutes from './routes.mjs';
 import admin from 'firebase-admin'
+import { getMessaging } from 'firebase/messaging';
 
 import 'dotenv/config'
 import { applicationDefault } from 'firebase-admin/app';
@@ -66,4 +67,25 @@ admin.initializeApp({
   credential: applicationDefault(),
 });
 
-const registrationToken = ''
+const registrationToken = 'd7ohP8ZHxVly1guIlzx9Yf:APA91bGUOqW43eg4jztlt2Ks9tbY_o-Q46cU52uydHmgPLWqWz3vcYYnpwCy2IQIhONd12UFwCogzCMiH1gLxr9gbBdoOuYaXCAcm6WFbYy2eLWGAng1oMOOY10YQ0k5BDjzmlEVSO_H'
+
+const payload = {
+  data:{
+    myKey1:'hello'
+  }, 
+  token: registrationToken
+}
+
+// const options = {
+//   priority:'high', 
+//   timeToLive: 60*60*24
+// }
+
+// getMessaging().send(payload)
+// .then((response =>{
+//   console.log('sent message', response)
+// }))
+// .catch(error=>{
+//   console.log('error',error)
+// })
+
