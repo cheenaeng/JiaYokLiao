@@ -2,8 +2,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
 module.exports = {
+
   plugins: [
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin(), 
   ],
   output: {
     filename: '[name]-[contenthash].bundle.js',

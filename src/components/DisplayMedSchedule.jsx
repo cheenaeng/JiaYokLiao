@@ -7,7 +7,7 @@ import {
 
 import cron from 'cron';
 
-// const { CronJob } = cron;
+const { CronJob } = cron;
 
 // const cronExpressionFormatted = (frequencyData, timing) => {
 //   const asterik = '*';
@@ -72,7 +72,7 @@ const checkTodaysMedicines = (record) => {
 
 function DisplayMedSchedule({ allMedRecords, setMedRecords }) {
   const [medicationTodays, setTodayMedications] = useState([]);
-  const [showJobsList, setList] = useState([]);
+  const [takenStatus, setTakenStatus] = useState(0);
 
   useEffect(() => {
     axios.get('/allMeds').then((response) => {
@@ -90,10 +90,23 @@ function DisplayMedSchedule({ allMedRecords, setMedRecords }) {
 
       // sort the medications based on the timing
       todayDataFlattened.sort((a, b) => Number(a.timeData.join('')) - Number(b.timeData.join('')));
+      console.log(medicationTodays);
 
       setTodayMedications(todayDataFlattened);
     });
-  }, []);
+  }, [takenStatus]);
+
+  const updateDoseStatus = (e, index) => {
+    const changedTask = medicationTodays[index];
+    const dataChanged = {
+      record: changedTask,
+    };
+    axios.put('/updateDoseStatus', dataChanged)
+      .then((response) => {
+        console.log(response.data);
+        setTakenStatus((num) => num += 1);
+      });
+  };
 
   // const allMedSchedules = allMedRecords.map((record) => {
   //   const timingSchedule = record.frequency.timing.map((time) => cronExpressionFormatted(record.frequency, time));
@@ -124,9 +137,19 @@ function DisplayMedSchedule({ allMedRecords, setMedRecords }) {
   //   return listsOfFilteredRecord;
   // });
 
+  // this cron job will update at every midnight to not taken status
+  const job = new CronJob('0 0 * * *', (() => {
+    console.log('heyyy');
+    axios.put('/restartDoseStatus').then((response) => {
+      console.log('updated to default again');
+      setTakenStatus((num) => num += 1);
+    });
+  }), null, true, 'Asia/Singapore');
+  job.start();
+
   return (
     <List>
-      {medicationTodays.map((med) => (
+      {medicationTodays.map((med, index) => (
         <ListItem spacing={3} border="1px" borderColor="gray.200" mb={3} p={2}>
           <p>{med.medicationName}</p>
           <p>
@@ -135,7 +158,7 @@ function DisplayMedSchedule({ allMedRecords, setMedRecords }) {
             {med.timeData[0]}
             {med.timeData[1]}
           </p>
-          <Button> Taken</Button>
+          <Button onClick={(e) => { updateDoseStatus(e, index); }} isDisabled={true && med.doseTaken[med.timeData.join(':')] === 'taken'}> Taken</Button>
         </ListItem>
       ))}
     </List>
@@ -144,5 +167,3 @@ function DisplayMedSchedule({ allMedRecords, setMedRecords }) {
 }
 
 export default DisplayMedSchedule;
-
-// next part -- if taken, to update row and say taken for today. create another column for taken

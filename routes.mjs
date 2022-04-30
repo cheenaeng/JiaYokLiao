@@ -11,4 +11,8 @@ export default function routes(app) {
 
   app.post('/formData', MedRecord.addFormData);
   app.get('/allMeds', MedRecord.findAllMedRecord);
+  app.put('/updateDoseStatus', MedRecord.changeDoseStatus);
+  app.put('/restartDoseStatus', MedRecord.restartDoseStatus);
+
+  // app.post('/subscribe', initUser.addSubscription);
 }

@@ -1,6 +1,9 @@
 import {
   format, compareAsc, parseISO, getDate, getMonth, getYear,
 } from 'date-fns';
+import cron from 'cron';
+
+const { CronJob } = cron;
 
 // helper function to convert date
 const convertDate = (date) => {
@@ -47,6 +50,17 @@ export default function initMedRecordController(db) {
         return formatedTimeInHhMm;
       });
 
+      // default status of dose-taken --> not taken
+      // [{medTiming:not-taken,medTiming:non-taken}]
+
+      const doseTakenStatus = {};
+
+      medTimings.forEach((timing) => {
+        doseTakenStatus[timing] = '';
+      });
+
+      console.log(doseTakenStatus);
+
       updateConsolidatedFreq(frequencyData, formattedFrequency, formatedTime);
 
       const newRecord = await db.MedicationRecord.create({
@@ -55,6 +69,8 @@ export default function initMedRecordController(db) {
         quantity: medQuantity,
         specialInstructions: medInstructions,
         frequency: formattedFrequency,
+        doseTaken: doseTakenStatus,
+        userId: 1,
       });
 
       response.send({ newRecord });
@@ -75,7 +91,61 @@ export default function initMedRecordController(db) {
     }
   };
 
+  const changeDoseStatus = async (request, response) => {
+    try {
+      console.log(request.body);
+      const findChangedDoseRecord = await db.MedicationRecord.findOne({
+        where: {
+          id: request.body.record.id,
+        },
+      });
+
+      console.log(findChangedDoseRecord);
+
+      const doseStatus = findChangedDoseRecord.doseTaken;
+      const timingOfMedDose = request.body.record.timeData.join(':');
+      doseStatus[timingOfMedDose] = 'taken';
+
+      const updatedDoseRecord = await db.MedicationRecord.update(
+        { doseTaken: doseStatus },
+        { where: { id: findChangedDoseRecord.id } },
+      );
+
+      response.send({ updatedDoseRecord });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
+  const restartDoseStatus = async (request, response) => {
+    try {
+      const allMedRecords = await db.MedicationRecord.findAll();
+
+      const allDoseTakenUpdatedRecords = await allMedRecords.map((record) => {
+        const medRecordData = record.doseTaken;
+        for (const doseTiming in medRecordData) {
+          medRecordData[doseTiming] = '';
+        }
+        const updatedQuery = db.MedicationRecord.update(
+          { doseTaken: medRecordData }, {
+            where: { id: record.id },
+          },
+        );
+
+        return updatedQuery;
+      });
+
+      const updatedResults = await Promise.all(allDoseTakenUpdatedRecords);
+
+      response.send({ updatedResults });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
-    addFormData, findAllMedRecord,
+    addFormData, findAllMedRecord, changeDoseStatus, restartDoseStatus,
   };
 }

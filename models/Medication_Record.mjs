@@ -33,6 +33,9 @@ export default function initMedicationRecordModel(sequelize, DataTypes) {
       photo: {
         type: DataTypes.STRING,
       },
+      doseTaken: {
+        type: DataTypes.JSON,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

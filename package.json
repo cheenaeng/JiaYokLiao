@@ -5,9 +5,9 @@
   "main": "index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpack_conf/webpack.prod.js",
-    "start": "node index.mjs",
-    "watch": "nodemon index.mjs"
+    "build": "env-cmd -f ./.env webpack --config webpack_conf/webpack.prod.js",
+    "start": "env-cmd -f ./.env node index.mjs",
+    "watch": "env-cmd -f ./.env nodemon index.mjs"
   },
   "repository": {
     "type": "git",
@@ -58,15 +58,22 @@
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "cookie-parser": "^1.4.5",
+    "cra-append-sw": "^2.7.0",
     "cron": "^1.8.2",
     "date-fns": "^2.28.0",
+    "dotenv": "^16.0.0",
     "ejs": "^3.1.5",
+    "env-cmd": "^10.1.0",
     "express": "^4.17.1",
+    "firebase": "^9.7.0",
+    "firebase-admin": "^10.1.0",
     "framer-motion": "^6.3.1",
     "method-override": "^3.0.0",
     "pg": "^8.7.3",
     "react-datepicker": "^4.7.0",
+    "react-hot-toast": "^2.2.0",
     "react-time-picker": "^4.5.0",
+    "regenerator-runtime": "^0.13.9",
     "sequelize": "^6.19.0",
     "style-loader": "^3.3.1"
   }
