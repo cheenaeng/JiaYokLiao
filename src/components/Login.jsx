@@ -1,12 +1,13 @@
 import React from 'react';
 import axios from 'axios';
 import {
-  Heading, Box, Input, FormControl, FormLabel, Button,
+  Heading, Box, Input, FormControl, FormLabel, Button, Alert,
 } from '@chakra-ui/react';
 
 import { useFormik } from 'formik';
+import { getFCMToken } from '../firebasePermission';
 
-export default function Login({ setVerification }) {
+export default function Login({ setVerification, setDashboardView }) {
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -26,6 +27,15 @@ export default function Login({ setVerification }) {
             console.log('error- verification is wrong');
           }
           setVerification((verified) => verified = true);
+          getFCMToken().then((token) => {
+            const userToken = {
+              fcmToken: token,
+            };
+            axios.put('/addFCMToken', userToken)
+              .then((res) => console.log(res.data))
+              .catch((error) => console.log(error));
+          });
+          setDashboardView((prevView) => prevView = true);
         }).catch((error) => console.log(error));
     },
   });

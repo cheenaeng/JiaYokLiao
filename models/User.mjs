@@ -17,7 +17,7 @@ export default function initUserModel(sequelize, DataTypes) {
       password: {
         type: DataTypes.STRING,
       },
-      fcm_token: {
+      fcmToken: {
         type: DataTypes.STRING,
       },
       createdAt: {

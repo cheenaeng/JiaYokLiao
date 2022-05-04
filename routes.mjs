@@ -17,6 +17,6 @@ export default function routes(app) {
   app.put('/restartDoseStatus', MedRecord.restartDoseStatus);
   app.post('/registerUser', User.addUser);
   app.post('/verifyUser', User.findUser);
-
-  // app.post('/subscribe', initUser.addSubscription);
+  app.put('/addFCMToken', User.addFCM);
+  app.get('/allusers', User.getAllUser);
 }

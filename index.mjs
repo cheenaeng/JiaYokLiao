@@ -2,11 +2,12 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import methodOverride from 'method-override';
 import bindRoutes from './routes.mjs';
-import admin from 'firebase-admin'
-import { getMessaging } from 'firebase/messaging';
+import admin from 'firebase-admin';
+import { applicationDefault } from 'firebase-admin/app';
+import axios from 'axios'
 
 import 'dotenv/config'
-import { applicationDefault } from 'firebase-admin/app';
+
 
 // Initialise Express instance
 const app = express();
@@ -62,30 +63,37 @@ bindRoutes(app);
 const PORT = process.env.PORT || 3004;
 app.listen(PORT);
 
+var payload = {
+  notification: {
+    title: "Account Deposit",
+    body: "A deposit to your savings account has just cleared."
+  },
+  data: {
+    account: "Savings",
+    balance: "$3020.25"
+  }
+};
 
+ var options = {
+  priority: "high",
+  timeToLive: 60 * 60 *24
+};
 admin.initializeApp({
   credential: applicationDefault(),
 });
 
-const registrationToken = 'd7ohP8ZHxVly1guIlzx9Yf:APA91bGUOqW43eg4jztlt2Ks9tbY_o-Q46cU52uydHmgPLWqWz3vcYYnpwCy2IQIhONd12UFwCogzCMiH1gLxr9gbBdoOuYaXCAcm6WFbYy2eLWGAng1oMOOY10YQ0k5BDjzmlEVSO_H'
-
-const payload = {
-  data:{
-    myKey1:'hello'
-  }, 
-  token: registrationToken
-}
-
-// const options = {
-//   priority:'high', 
-//   timeToLive: 60*60*24
-// }
-
-// getMessaging().send(payload)
-// .then((response =>{
-//   console.log('sent message', response)
-// }))
-// .catch(error=>{
-//   console.log('error',error)
+// axios.get('http://localhost:3004/allusers')
+// .then(response=>{
+//   const allUsersData = response.data.allUsers 
+//   const allUsersFcmData = allUsersData.map(data => data.fcmToken)
+//   allUsersFcmData.forEach(fcmToken =>{
+//     admin.messaging().sendToDevice(fcmToken, payload,options)
+//     .then(function(response) {
+//       console.log("Successfully sent message:", response);
+//     })
+//     .catch(function(error) {
+//       console.log("Error sending message:", error);
+//     })
+//   })
 // })
-
+// .catch(error=>console.log(error))

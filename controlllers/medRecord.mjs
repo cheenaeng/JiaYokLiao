@@ -2,6 +2,7 @@ import {
   format, compareAsc, parseISO, getDate, getMonth, getYear,
 } from 'date-fns';
 import cron from 'cron';
+import admin from 'firebase-admin';
 
 const { CronJob } = cron;
 
@@ -23,6 +24,30 @@ const updateConsolidatedFreq = (data, frequencyTable, freqTiming) => {
   frequencyTable.weekDays = data?.numberOfDaysWeek;
   frequencyTable.monthlyInterval = data.freqOccurence?.qMonthInterval;
   frequencyTable.timing = freqTiming;
+};
+
+const cronExpressionFormatted = (frequencyData, timing) => {
+  const asterik = '*';
+  const cronExpression = [];
+  for (let i = 0; i < 5; i += 1) {
+    cronExpression.push(asterik);
+  }
+  // to assign the first 2 timing which are compuslory fields(i.e. occur at every 10.00pm for e.g.)
+
+  cronExpression[0] = timing.mm;
+  cronExpression[1] = timing.hh;
+
+  if (frequencyData.days) {
+    cronExpression[2] = `*/${frequencyData.days}`;
+  }
+  else if (frequencyData.weekDay) {
+    cronExpression[4] = `*/${frequencyData.weekDays}`;
+  }
+  else if (frequencyData.monthlyInterval) {
+    cronExpression[3] = `*/${frequencyData.monthlyInterval}`;
+  }
+
+  return cronExpression.join(' ');
 };
 
 export default function initMedRecordController(db) {
@@ -52,7 +77,6 @@ export default function initMedRecordController(db) {
 
       // default status of dose-taken --> not taken
       // [{medTiming:not-taken,medTiming:non-taken}]
-
       const doseTakenStatus = {};
 
       medTimings.forEach((timing) => {
@@ -70,9 +94,47 @@ export default function initMedRecordController(db) {
         specialInstructions: medInstructions,
         frequency: formattedFrequency,
         doseTaken: doseTakenStatus,
-        userId: 1,
+        userId: request.cookies.userId,
       });
 
+      const userFCMToken = await db.User.findOne({
+        where: {
+          id: request.cookies.userId,
+        },
+      });
+
+      const allMedSchedules = await newRecord.frequency.timing.map((time) => cronExpressionFormatted(newRecord.frequency, time));
+
+      // console.log(allMedSchedules, 'alllll medddd recordddd');
+
+      // this is to create a cronjob for each of the timing
+      const allJobs = await allMedSchedules.map((schedule) => {
+        const job = new CronJob(schedule, (() => {
+          console.log(schedule);
+
+          const payload = {
+            notification: {
+              title: 'Medication Reminder',
+              body: `Reminder to take ${newRecord.medicationName}!`,
+            },
+          };
+          const options = {
+            priority: 'high',
+          };
+
+          admin.messaging().sendToDevice(userFCMToken.fcmToken, payload, options)
+            .then((res) => {
+              console.log('Successfully sent message:', res);
+              // when message is fired, to send medication record to the front end to show notification on the app itself
+            })
+            .catch((error) => {
+              console.log('Error sending message:', error);
+            });
+        }), null, true, 'Asia/Singapore');
+        job.start();
+
+        return job;
+      });
       response.send({ newRecord });
     }
     catch (error) {
@@ -82,7 +144,11 @@ export default function initMedRecordController(db) {
 
   const findAllMedRecord = async (request, response) => {
     try {
-      const allRecords = await db.MedicationRecord.findAll();
+      const allRecords = await db.MedicationRecord.findAll({
+        where: {
+          userId: request.cookies.userId,
+        },
+      });
 
       response.send({ allRecords });
     }

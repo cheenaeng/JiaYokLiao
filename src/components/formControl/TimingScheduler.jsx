@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
-  Box, Button, HStack, Select, Input,
+  Box, Button, HStack,
 } from '@chakra-ui/react';
-import TimePicker from 'react-time-picker';
+import TimePicker from 'react-time-picker-input';
+import 'react-time-picker-input/dist/components/TimeInput.css';
 
 function TimingScheduler({ medTimings, setMedTiming }) {
   const [timings, setTimings] = useState(['']);
@@ -31,7 +32,7 @@ function TimingScheduler({ medTimings, setMedTiming }) {
       <Button onClick={addNewTiming}>
         +
       </Button>
-      {timings.map((timing, index) => <TimePicker onChange={(timing) => onTimingChange(timing, index)} value={timing} clockIcon={null} disableClock />)}
+      {timings.map((timing, index) => <TimePicker onChange={(timing) => onTimingChange(timing, index)} value={timing} />)}
       <Button onClick={removeTiming}>
         -
       </Button>

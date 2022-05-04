@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Input, Select, HStack, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Text, Textarea,
+  Input, Select, HStack, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Text, Textarea, Heading, Button, useDisclosure, Alert, AlertIcon, AlertTitle, AlertDescription, Box, CloseButton,
 } from '@chakra-ui/react';
-import FrequencyScheduler from './FrequencyScheduler.jsx';
-import TimingScheduler from './TimingScheduler.jsx';
-import SubmitForm from './SubmitForm.jsx';
+import axios from 'axios';
+import FrequencyScheduler from './formControl/FrequencyScheduler.jsx';
+import TimingScheduler from './formControl/TimingScheduler.jsx';
 
-const MedicationForm = () => {
+const MedicationForm = ({ setUserFormView, userFormView }) => {
+  const [submissionStatus, setSubmissionStatus] = useState('');
+  const [newRecord, setNewRecord] = useState([]);
+
   const initialFreqValues = {
     repeatFrequency: 'hourly',
     qHourInterval: '',
@@ -34,8 +37,6 @@ const MedicationForm = () => {
   const [endDateOption, selectEndOption] = useState('never');
   const [formInput, setFormInput] = useState(initialFormValues);
 
-  console.log(medTimings);
-
   // frequency input data
   const frequencyData = {
     freqOccurence: frequencyInput,
@@ -44,8 +45,16 @@ const MedicationForm = () => {
     endingDate: dates.endDate,
   };
 
-  // rest of the data
+  const clearAllData = () => {
+    setMedTiming([]);
+    setStartEndDates('');
+    setFrequency(initialFreqValues);
+    setDays([]);
+    selectEndOption('never');
+    setFormInput(initialFormValues);
+  };
 
+  // rest of the data
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormInput({ ...formInput, [name]: value });
@@ -74,10 +83,64 @@ const MedicationForm = () => {
     </HStack>
   );
 
+  const showSubmissionApplication = () => {
+    const closeMessage = () => {
+      setSubmissionStatus('');
+    };
+
+    if (newRecord) {
+      console.log('heyy');
+      const successAlert = (
+        <Alert status="success">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>Success!</AlertTitle>
+            <AlertDescription>
+              Your record has been successfully saved
+            </AlertDescription>
+          </Box>
+          <CloseButton
+            alignSelf="flex-start"
+            position="relative"
+            right={-1}
+            top={-1}
+            onClick={closeMessage}
+          />
+        </Alert>
+      );
+      setSubmissionStatus(successAlert);
+    }
+  };
+
+  function SubmitForm() {
+    const submitFormData = () => {
+      const frequencyTimings = { medTimings };
+      const frequencyInfo = { frequencyData };
+      const allData = { ...formInput, ...frequencyInfo, ...frequencyTimings };
+      axios.post('/formData', allData)
+        .then((response) => {
+          clearAllData();
+          console.log(response.data.newRecord);
+          setNewRecord((prevRecord) => [...prevRecord, response.data.newRecord]);
+          showSubmissionApplication();
+        })
+        .catch((error) => console.log(error));
+    };
+    return (
+      <Button onClick={() => { submitFormData(); }}>
+        Submit Form
+      </Button>
+    );
+  }
+
   console.log(formInput);
   console.log(medTimings);
   return (
     <>
+      <Heading as="h1" size="2xl">
+        Record your medication
+      </Heading>
+      {submissionStatus}
       <label className="form-label" size="sm"> Medication Name: </label>
       <Input name="medicationName" value={formInput.medicationName} type="text" onChange={handleChange} />
 
@@ -105,7 +168,8 @@ const MedicationForm = () => {
       <label className="form-label" size="sm"> Special Instructions:</label>
       <Textarea name="medInstructions" value={formInput.medInstructions} onChange={handleChange}> </Textarea>
 
-      <SubmitForm formInput={formInput} frequencyData={frequencyData} medTimings={medTimings} />
+      <SubmitForm />
+
     </>
   );
 };
