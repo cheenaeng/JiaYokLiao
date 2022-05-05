@@ -4,6 +4,7 @@ import {
   Grid, GridItem, Select, Text, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Button,
 } from '@chakra-ui/react';
 import '../../../node_modules/react-datepicker/dist/react-datepicker.css';
+import parseISO from 'date-fns/parseISO'
 
 function FrequencyScheduler({
   dates, setStartEndDates, frequencyInput, setFrequency, storedDays, setDays, endDateOption, selectEndOption,
@@ -45,8 +46,6 @@ function FrequencyScheduler({
 
     return buttonDay;
   };
-
-  console.log(storedDays);
 
   const HourlyOutput = () => (
     <>
@@ -167,7 +166,7 @@ function FrequencyScheduler({
           <DatePicker
             name="startDate"
             wrapperClassName="datePicker"
-            id="startDate"
+            id="startDate" 
             selected={dates.startDate}
             onChange={(date) => setStartEndDates({ ...dates, startDate: date })}
             isClearable
@@ -203,7 +202,7 @@ function FrequencyScheduler({
             name="endDate"
             wrapperClassName="datePicker"
             id="startDate"
-            selected={dates.endDate}
+            selected={parseISO(dates.endDate)}
             onChange={(date) => setStartEndDates({ ...dates, endDate: date })}
             isClearable
             showYearDropdown

@@ -44,8 +44,8 @@ db.MedicationRecord.belongsTo(db.User);
 db.User.hasMany(db.MedicationRecord);
 
 // one to one relationship
-db.MedicationRecord.hasOne(db.MedicationDetail);
-db.MedicationDetail.belongsTo(db.MedicationRecord);
+// db.MedicationRecord.hasOne(db.MedicationDetail);
+// db.MedicationDetail.belongsTo(db.MedicationRecord);
 
 // indication and medication detail tables are linked by medication_indication table
 db.Indication.belongsToMany(db.MedicationDetail, { through: 'medication_indications' });

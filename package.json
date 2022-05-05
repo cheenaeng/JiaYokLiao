@@ -54,7 +54,9 @@
   },
   "dependencies": {
     "@breejs/later": "^4.1.0",
+    "@chakra-ui/icons": "^1.1.7",
     "@chakra-ui/react": "^1.8.8",
+    "@choc-ui/chakra-autocomplete": "^4.22.0",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "cookie-parser": "^1.4.5",
@@ -69,6 +71,7 @@
     "firebase-admin": "^10.1.0",
     "formik": "^2.2.9",
     "framer-motion": "^6.3.1",
+    "json-stringify-safe": "^5.0.1",
     "method-override": "^3.0.0",
     "pg": "^8.7.3",
     "react-css-transition-replace": "^4.0.5",

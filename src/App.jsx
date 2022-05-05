@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChakraProvider, Container } from '@chakra-ui/react';
 
 import WeeklySchedule from './components/WeeklySchedule.jsx';
@@ -7,6 +7,8 @@ import DisplayMedSchedule from './components/DisplayMedSchedule.jsx';
 import Notification from './components/Notification.jsx';
 import Registration from './components/Registration.jsx';
 import Login from './components/Login.jsx';
+import MedicationOverview from './components/MedicationOverview.jsx';
+import axios from 'axios';
 
 export default function App() {
   const [allMedRecords, setMedRecords] = useState([]);
@@ -14,8 +16,16 @@ export default function App() {
   const [userVerified, setVerification] = useState(false);
   const [userFormView, setUserFormView] = useState(true);
   const [dashboardView, setDashboardView] = useState(true);
+  const [medData, setMedData] = useState([]);
 
-  console.log(medicationTodays);
+  useEffect(() => {
+    axios.get('/allMedDetails')
+      .then((response) => {
+        console.log(response.data, 'responseeee');
+        setMedData(response.data.allMedications);
+      });
+  }, []);
+
 
   return (
     <ChakraProvider>
@@ -29,8 +39,9 @@ export default function App() {
           </>
         ) }
         {userFormView
-        && <MedicationForm userFormView={userFormView} setUserFormView={setUserFormView} />}
+        && <MedicationForm userFormView={userFormView} setUserFormView={setUserFormView} medData={medData}/>}
         <Notification medicationTodays={medicationTodays} />
+        <MedicationOverview medData={medData} />
       </Container>
 
     </ChakraProvider>

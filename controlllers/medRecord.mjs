@@ -3,6 +3,7 @@ import {
 } from 'date-fns';
 import cron from 'cron';
 import admin from 'firebase-admin';
+import stringify from 'json-stringify-safe';
 
 const { CronJob } = cron;
 
@@ -12,7 +13,7 @@ const convertDate = (date) => {
 
   const convertedDate = {
     dd: getDate(parsedDate),
-    mm: getMonth(parsedDate),
+    mm: getMonth(parsedDate)+1,
     yy: getYear(parsedDate),
 
   };
@@ -55,7 +56,7 @@ export default function initMedRecordController(db) {
     try {
       console.log(request.body);
       const {
-        medicationName, medDose, medQuantity, medInstructions, frequencyData, medTimings,
+        medicationName, medDose, medQuantity, medInstructions, frequencyData, medTimings, doseUnit,
       } = request.body;
 
       // for end date stored as {ddEnd: , mmEnd: , yyEnd:}
@@ -67,6 +68,7 @@ export default function initMedRecordController(db) {
         endDate: convertDate(frequencyData?.endingDate),
         startDate: convertDate(frequencyData.startingDate),
         rawData: frequencyData,
+        allCronJobs: []
       };
 
       const formatedTime = medTimings.map((timing) => {
@@ -87,6 +89,51 @@ export default function initMedRecordController(db) {
 
       updateConsolidatedFreq(frequencyData, formattedFrequency, formatedTime);
 
+
+
+      const userFCMToken = await db.User.findOne({
+        where: {
+          id: request.cookies.userId,
+        },
+      });
+
+      const allMedSchedules =  formattedFrequency.timing.map((time) => cronExpressionFormatted(formattedFrequency, time));
+
+      // console.log(allMedSchedules, 'alllll medddd recordddd');
+
+      // this is to create a cronjob for each of the timing
+      const allJobs = allMedSchedules.map((schedule) => {
+        const job = new CronJob(schedule, (() => {
+          console.log(schedule);
+
+          const payload = {
+            notification: {
+              title: 'Medication Reminder',
+              body: `Reminder to take ${newRecord.medicationName}!`,
+            },
+          };
+          const options = {
+            priority: 'high',
+          };
+        
+          admin.messaging().sendToDevice(userFCMToken.fcmToken, payload, options)
+            .then((res) => {
+              console.log('Successfully sent message:', res);
+              // when message is fired, to send medication record to the front end to show notification on the app itself
+            })
+            .catch((error) => {
+              console.log('Error sending message:', error);
+            });
+        }), null, true, 'Asia/Singapore');
+        job.start();
+
+        return job;
+      });
+      const stringifiedJobs = stringify(allJobs)
+      console.log(stringifiedJobs)
+
+      formattedFrequency.allCronJobs = stringifiedJobs
+
       const newRecord = await db.MedicationRecord.create({
         medicationName,
         dose: medDose,
@@ -95,17 +142,78 @@ export default function initMedRecordController(db) {
         frequency: formattedFrequency,
         doseTaken: doseTakenStatus,
         userId: request.cookies.userId,
+        medicationUnits: doseUnit,
       });
+  
+      response.send({ newRecord });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
 
-      const userFCMToken = await db.User.findOne({
+  const editFormData = async (request, response) => {
+    try {
+      console.log(request.body);
+      const {
+        medicationName, medDose, medQuantity, medInstructions, frequencyData, medTimings, doseUnit, id 
+      } = request.body;
+
+   
+      const foundData = await db.MedicationRecord.findOne({
         where: {
-          id: request.cookies.userId,
+          id: id
         },
       });
+      
+      // for end date stored as {ddEnd: , mmEnd: , yyEnd:}
+       const formattedFrequency = {
+        timing: [],
+        days: '',
+        weekDays: '',
+        monthlyInterval: '',
+        endDate: convertDate(frequencyData?.endingDate),
+        startDate: convertDate(frequencyData.startingDate),
+        rawData: frequencyData,
+        allCronJobs: foundData.allCronJobs
+      };
+
+      const formatedTime = medTimings.map((timing) => {
+        const timingSplit = timing.split(':');
+        const formatedTimeInHhMm = { mm: timingSplit[1], hh: timingSplit[0] };
+        return formatedTimeInHhMm;
+      });
+
+      // default status of dose-taken --> not taken
+      // [{medTiming:not-taken,medTiming:non-taken}]
+      const doseTakenStatus = {};
+
+      medTimings.forEach((timing) => {
+        doseTakenStatus[timing] = '';
+      });
+
+      updateConsolidatedFreq(frequencyData, formattedFrequency, formatedTime);
+
+      const newRecord = await db.MedicationRecord.update(
+        { medicationName: medicationName},
+        { dose: medDose}, 
+        { quantity: medQuantity}, 
+        {specialInstructions: medInstructions,}, 
+        {   frequency: formattedFrequency,}, 
+        { doseTaken: doseTakenStatus,},
+        {  medicationUnits: doseUnit,},
+        {  where:{
+          id: id
+        }}
+      );
+
+       const updatedDoseRecord = await db.MedicationRecord.update(
+        { doseTaken: doseStatus },
+        { where: { id: findChangedDoseRecord.id } },
+      );
+
 
       const allMedSchedules = await newRecord.frequency.timing.map((time) => cronExpressionFormatted(newRecord.frequency, time));
-
-      // console.log(allMedSchedules, 'alllll medddd recordddd');
 
       // this is to create a cronjob for each of the timing
       const allJobs = await allMedSchedules.map((schedule) => {
@@ -211,7 +319,22 @@ export default function initMedRecordController(db) {
     }
   };
 
+  const findEdit = async (request, response) => {
+    try {
+      const allMedRecords = await db.MedicationRecord.findOne({
+        where:{
+          id: request.params.id
+        }
+      })
+
+      response.send({ allMedRecords });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
-    addFormData, findAllMedRecord, changeDoseStatus, restartDoseStatus,
+    addFormData, findAllMedRecord, changeDoseStatus, restartDoseStatus,findEdit,editFormData
   };
 }

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { List, ListItem, Button } from '@chakra-ui/react';
-import {
-  format, compareAsc, parseISO, getDay, isAfter, differenceInDays,
-} from 'date-fns';
+import { getDay, isAfter, differenceInDays } from 'date-fns';
 
 import cron from 'cron';
 
@@ -46,9 +44,7 @@ const checkTodaysMedicines = (record) => {
   return false;
 };
 
-function DisplayMedSchedule({
-  allMedRecords, setMedRecords, medicationTodays, setTodayMedications,
-}) {
+function DisplayMedSchedule({ setMedRecords, medicationTodays, setTodayMedications }) {
   const [takenStatus, setTakenStatus] = useState(0);
 
   useEffect(() => {
@@ -67,8 +63,6 @@ function DisplayMedSchedule({
 
       // sort the medications based on the timing
       todayDataFlattened.sort((a, b) => Number(a.timeData.join('')) - Number(b.timeData.join('')));
-      console.log(medicationTodays), 'med today';
-
       setTodayMedications(todayDataFlattened);
     });
   }, [takenStatus]);
@@ -80,7 +74,6 @@ function DisplayMedSchedule({
     };
     axios.put('/updateDoseStatus', dataChanged)
       .then((response) => {
-        console.log(response.data);
         setTakenStatus((num) => num += 1);
       });
   };
@@ -115,32 +108,3 @@ function DisplayMedSchedule({
 }
 
 export default DisplayMedSchedule;
-
-// const allMedSchedules = allMedRecords.map((record) => {
-//   const timingSchedule = record.frequency.timing.map((time) => cronExpressionFormatted(record.frequency, time));
-
-//   return timingSchedule;
-// });
-
-// const flattedMedRecords = allMedRecords.flat(1);
-// const flattedSchedules = allMedSchedules.flat(1);
-
-// // this is to create a cronjob for each of the timing
-// const allJobs = flattedSchedules.map((schedule) => {
-//   const job = new CronJob(schedule, (() => {
-//     console.log('hiiii');
-//     console.log(schedule);
-//     setList[(prevList) => [...prevList, ...schedule]];
-//   }), null, true, 'Asia/Singapore');
-//   job.start();
-
-//   return job;
-// });
-
-// console.log(flattedSchedules);
-// console.log(showJobsList);
-
-// const listOfMeds = flattedMedRecords.filter((record) => {
-//   const listsOfFilteredRecord = flattedSchedules.filter((job, index) => job === record);
-//   return listsOfFilteredRecord;
-// });

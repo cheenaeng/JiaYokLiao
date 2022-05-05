@@ -1,19 +1,3 @@
-// axios.get('http://localhost:3004/allusers')
-//   .then((response) => {
-//     const allUsersData = response.data.allUsers;
-//     const allUsersFcmData = allUsersData.map((data) => data.fcmToken);
-//     allUsersFcmData.forEach((fcmToken) => {
-//       admin.messaging().sendToDevice(fcmToken, payload, options)
-//         .then((response) => {
-//           console.log('Successfully sent message:', response);
-//         })
-//         .catch((error) => {
-//           console.log('Error sending message:', error);
-//         });
-//     });
-//   })
-//   .catch((error) => console.log(error));
-
 export default function initUser(db) {
   const addUser = async (request, response) => {
     try {

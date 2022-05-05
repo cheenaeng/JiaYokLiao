@@ -2,63 +2,78 @@ import React, { useState, useEffect } from 'react';
 import {
   Input, Select, HStack, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Text, Textarea, Heading, Button, Alert, AlertIcon, AlertTitle, AlertDescription, Box, CloseButton, Flex, FormControl, FormLabel, FormHelperText,
 } from '@chakra-ui/react';
-
+import parseISO from 'date-fns/parseISO'
 import axios from 'axios';
 import FrequencyScheduler from './formControl/FrequencyScheduler.jsx';
-import TimingScheduler from './formControl/TimingScheduler.jsx';
+import EditedTimeSchedule from './formControl/EditedTimeSchedule.jsx';
 
-const MedicationForm = ({ setUserFormView, userFormView, medData}) => {
+const showInitalFreqValue = (data) =>{
+  return {
+    repeatFrequency: data.repeatFrequency, 
+    qHourInterval: data?.qHourInterval, 
+    qTimesInterval: data?.qTimesInterval, 
+    qDayInterval: data?.qDayInterval, 
+    qMonthInterval: data?.qMonthInterval
+  }
+}
+
+const EditForm = ({ medicationEdit,medData}) => {
+
   const [submissionStatus, setSubmissionStatus] = useState('');
   const [newRecord, setNewRecord] = useState([]);
   const [othersInput, setOthersInputField] = useState(false);
-
-  const initialFreqValues = {
-    repeatFrequency: 'hourly',
-    qHourInterval: '',
-    qTimesInterval: '',
-    qDayInterval: '',
-    qMonthInterval: '',
-  };
-
-  const startEndDates = {
-    startDate: new Date(),
-    endDate: '',
-  };
-
-  const initialFormValues = {
-    medicationName: 'atorvastatin',
-    medDose: '',
-    doseUnit: 'tablet',
-    medQuantity: '',
-    medInstructions: '',
-  };
   const [medTimings, setMedTiming] = useState([]);
-  const [dates, setStartEndDates] = useState(startEndDates);
-  const [frequencyInput, setFrequency] = useState(initialFreqValues);
+  const [dates, setStartEndDates] = useState({});
+  const [frequencyInput, setFrequency] = useState({});
   const [storedDays, setDays] = useState([]);
   const [endDateOption, selectEndOption] = useState('never');
-  const [formInput, setFormInput] = useState(initialFormValues);
+  const [formInput, setFormInput] = useState({});
   const [tempValue, setTempValue] = useState('');
 
-  // frequency input data
-  const frequencyData = {
+
+useEffect(()=>{
+  console.log(medicationEdit)
+
+  axios.get(`/medicationEdit/${medicationEdit[0].id}`)
+  .then(response=>{
+    console.log(response.data)
+
+    const parsedStartDate = parseISO(response.data.allMedRecords.frequency.rawData.startingDate)
+    const parsedEndDate = parseISO(response.data.allMedRecords.frequency.rawData?.endingDate)
+    
+    const initialValues = showInitalFreqValue(response.data.allMedRecords.frequency.rawData.freqOccurence)
+  
+    const recordedStartEndDates = {
+      startDate:parsedStartDate,
+      endDate:parsedEndDate
+    }
+    console.log(initialValues)
+    console.log(recordedStartEndDates)
+
+    const initialRecordedFormValues = {
+      medicationName: response.data.allMedRecords.medicationName,
+      medDose: response.data.allMedRecords.dose,
+      doseUnit: response.data.allMedRecords?.medicationUnits,
+      medQuantity: response.data.allMedRecords.quantity,
+      medInstructions: response.data.allMedRecords.specialInstructions,
+    };
+
+    const frequencyData = {
     freqOccurence: frequencyInput,
     numberOfDaysWeek: storedDays,
     startingDate: dates.startDate,
     endingDate: dates.endDate,
-  };
+    };
+    setStartEndDates({...recordedStartEndDates})
+    setFrequency({...initialValues})
+    setFormInput({...initialRecordedFormValues})
+    const oldTimings = response.data.allMedRecords.frequency.timing.map(timing=> `${timing.hh}:${timing.mm}`)
+    console.log(oldTimings)
+    setMedTiming(oldTimings)
+  })
+},[])
 
-  const clearAllData = () => {
-    setMedTiming([]);
-    setStartEndDates('');
-    setFrequency(initialFreqValues);
-    setDays([]);
-    selectEndOption('never');
-    setFormInput(initialFormValues);
-  };
-
-  
-  // rest of the data
+console.log(dates)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,30 +85,25 @@ const MedicationForm = ({ setUserFormView, userFormView, medData}) => {
       setOthersInputField(false); }
   };
 
-  console.log(medData)
-
-  const DropDownName = () => {
-
-    return (
+  const DropDownName = () => (
     <Flex pt="0" justify="left" align="center" w="full">
       <FormControl w="60">
         <FormLabel>Medication Name:</FormLabel>
         <Select autoComplete="on" onChange={handleChange} value={formInput.medicationName} name="medicationName">
           {medData.map((med, mid) => (
             <option value={med.nameGeneric} key={`option-${mid}`} textTransform="capitalize">
-               {`${med.nameGeneric} (${med.nameBranded ? med.nameBranded?.brandNames[0] : 'No brand'})`}
+              {`${med.nameGeneric} (${med.nameBranded ? med.nameBranded?.brandNames.map((brandName) => brandName) : 'No brand'})`}
               {' '}
             </option>
           ))}
-
           <option value="others"> Others: Please state</option>
         </Select>
         <FormHelperText>Choose one that selects</FormHelperText>
 
       </FormControl>
-    </Flex>)
+    </Flex>
 
-  }
+  );
 
   console.log(formInput);
 
@@ -149,8 +159,8 @@ const MedicationForm = ({ setUserFormView, userFormView, medData}) => {
     }
   };
 
-  function SubmitForm() {
-    const submitFormData = () => {
+  function SaveEdits() {
+    const saveFormEdit = () => {
       const frequencyTimings = { medTimings };
       const frequencyInfo = { frequencyData };
       if (formInput.medicationName === 'others') {
@@ -158,7 +168,7 @@ const MedicationForm = ({ setUserFormView, userFormView, medData}) => {
       }
       console.log(formInput);
       const allData = { ...formInput, ...frequencyInfo, ...frequencyTimings };
-      axios.post('/formData', allData)
+      axios.put('/formData', allData)
         .then((response) => {
           clearAllData();
           console.log(response.data.newRecord);
@@ -168,8 +178,8 @@ const MedicationForm = ({ setUserFormView, userFormView, medData}) => {
         .catch((error) => console.log(error));
     };
     return (
-      <Button onClick={() => { submitFormData(); }}>
-        Submit Form
+      <Button onClick={() => { saveFormEdit(); }}>
+        Save Record
       </Button>
     );
   }
@@ -177,15 +187,20 @@ const MedicationForm = ({ setUserFormView, userFormView, medData}) => {
   const handleOthersChange = (e) => {
     setTempValue(e.target.value);
   };
-  console.log(formInput);
-  console.log(medTimings);
+
+  const clearAllData = () => {
+    setMedTiming([]);
+    setStartEndDates('');
+    setFrequency(initialFreqValues);
+    setDays([]);
+    selectEndOption('never');
+    setFormInput(initialFormValues);
+  };
+
+  
   return (
     <>
-      <Heading as="h1" size="2xl">
-        Record your medication
-      </Heading>
       {submissionStatus}
-
       <DropDownName />
       {othersInput
       && <Input type="text" onChange={handleOthersChange} value={tempValue} />}
@@ -208,15 +223,16 @@ const MedicationForm = ({ setUserFormView, userFormView, medData}) => {
       <FrequencyScheduler dates={dates} setStartEndDates={setStartEndDates} setFrequency={setFrequency} frequencyInput={frequencyInput} setDays={setDays} storedDays={storedDays} endDateOption={endDateOption} selectEndOption={selectEndOption} />
 
       <label className="form-label" size="sm"> Timing:</label>
-      <TimingScheduler medTimings={medTimings} setMedTiming={setMedTiming} />
+      <EditedTimeSchedule medTimings={medTimings} setMedTiming={setMedTiming} />
 
       <label className="form-label" size="sm"> Special Instructions:</label>
       <Textarea name="medInstructions" value={formInput.medInstructions} onChange={handleChange}> </Textarea>
 
-      <SubmitForm />
+      <SaveEdits />
 
     </>
   );
 };
 
-export default MedicationForm;
+export default EditForm;
+

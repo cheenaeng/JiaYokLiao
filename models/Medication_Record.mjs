@@ -14,6 +14,9 @@ export default function initMedicationRecordModel(sequelize, DataTypes) {
       dose: {
         type: DataTypes.STRING,
       },
+      medicationUnits: {
+        type: DataTypes.STRING,
+      },
       quantity: {
         type: DataTypes.STRING,
       },

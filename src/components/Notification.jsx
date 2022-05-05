@@ -1,23 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useToast } from '@chakra-ui/react';
 
-function Notification({ medicationTodays }) {
-  const currentTime = new Date();
+const convertTiming = (currentTime) => {
+  let hour = currentTime.getHours();
+  let min = currentTime.getMinutes();
+  min < 10 ? min = `0${min}` : min = min;
+  hour < 10 ? hour = `0${hour}` : hour = hour;
+  const time = `${hour}:${min}`;
+  return time;
+};
 
-  // to check time every minute
-  setInterval(() => {
-    const hour = currentTime.getHours();
-    let min = currentTime.getMinutes();
-    min < 10 ? min = `0${min}` : min = min;
-    const time = `${hour}:${min}`;
-    console.log(time);
-    const currentMedList = medicationTodays.filter((med) => med.timeData.join(':') === time);
-    console.log(currentMedList);
-  }, 60000);
+function Notification({ medicationTodays }) {
+  const toast = useToast();
+
+  const [today, setDate] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      toast.closeAll();
+      setDate(new Date());
+    }, 5000); return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  const currentConvertedTime = convertTiming(today);
+
+  useEffect(() => {
+    const updatedList = medicationTodays.filter((med) => med.timeData.join(':') === currentConvertedTime);
+    updatedList.forEach((med) => (toast({
+      title: 'Medication Reminder',
+      description: `It's time to take ${med.medicationName}`,
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    })));
+  }, [today]);
 
   return (
-
-    <div>Notification</div>
+    <>
+    </>
   );
 }
 

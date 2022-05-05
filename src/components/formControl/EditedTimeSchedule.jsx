@@ -6,13 +6,16 @@ import TimePicker from 'react-time-picker-input';
 import 'react-time-picker-input/dist/components/TimeInput.css';
 
 
-function TimingScheduler({ medTimings, setMedTiming }) {
+function EditedTimeSchedule({ medTimings, setMedTiming }) {
   const [timings, setTimings] = useState(['']);
+  console.log(medTimings)
 
   const addNewTiming = () => {
     const newAddedTimeArr = [...timings];
     newAddedTimeArr.push('');
-    setTimings(newAddedTimeArr);
+    console.log(newAddedTimeArr)
+    setTimings([...newAddedTimeArr]);
+    setMedTiming([...newAddedTimeArr])
   };
 
   const onTimingChange = (newTiming, index) => {
@@ -26,6 +29,8 @@ function TimingScheduler({ medTimings, setMedTiming }) {
     const removedTiming = [...timings];
     removedTiming.pop();
     setTimings(removedTiming);
+    medTimings.pop()
+    setMedTiming(medTimings)
   };
 
   return (
@@ -33,7 +38,7 @@ function TimingScheduler({ medTimings, setMedTiming }) {
       <Button onClick={addNewTiming}>
         +
       </Button>
-      {timings.map((timing, index) => <TimePicker onChange={(timing) => onTimingChange(timing, index)} value={timing} />)}
+      {medTimings.map((timing, index) => <TimePicker onChange={(timing) => onTimingChange(timing, index)} value={timing} />)}
       <Button onClick={removeTiming}>
         -
       </Button>
@@ -42,4 +47,4 @@ function TimingScheduler({ medTimings, setMedTiming }) {
   );
 }
 
-export default TimingScheduler;
+export default EditedTimeSchedule;
