@@ -6,6 +6,7 @@ import admin from 'firebase-admin';
 import stringify from 'json-stringify-safe';
 
 const { CronJob } = cron;
+const { CronTime } = cron;
 
 // helper function to convert date
 const convertDate = (date) => {
@@ -13,7 +14,7 @@ const convertDate = (date) => {
 
   const convertedDate = {
     dd: getDate(parsedDate),
-    mm: getMonth(parsedDate)+1,
+    mm: getMonth(parsedDate) + 1,
     yy: getYear(parsedDate),
 
   };
@@ -68,9 +69,8 @@ export default function initMedRecordController(db) {
         endDate: convertDate(frequencyData?.endingDate),
         startDate: convertDate(frequencyData.startingDate),
         rawData: frequencyData,
-        allCronJobs: []
+        allCronJobs: [],
       };
-
       const formatedTime = medTimings.map((timing) => {
         const timingSplit = timing.split(':');
         const formatedTimeInHhMm = { mm: timingSplit[1], hh: timingSplit[0] };
@@ -89,15 +89,13 @@ export default function initMedRecordController(db) {
 
       updateConsolidatedFreq(frequencyData, formattedFrequency, formatedTime);
 
-
-
       const userFCMToken = await db.User.findOne({
         where: {
           id: request.cookies.userId,
         },
       });
 
-      const allMedSchedules =  formattedFrequency.timing.map((time) => cronExpressionFormatted(formattedFrequency, time));
+      const allMedSchedules = formattedFrequency.timing.map((time) => cronExpressionFormatted(formattedFrequency, time));
 
       // console.log(allMedSchedules, 'alllll medddd recordddd');
 
@@ -109,17 +107,16 @@ export default function initMedRecordController(db) {
           const payload = {
             notification: {
               title: 'Medication Reminder',
-              body: `Reminder to take ${newRecord.medicationName}!`,
+              body: `Reminder to take ${medicationName}!`,
             },
           };
           const options = {
             priority: 'high',
           };
-        
+
           admin.messaging().sendToDevice(userFCMToken.fcmToken, payload, options)
             .then((res) => {
               console.log('Successfully sent message:', res);
-              // when message is fired, to send medication record to the front end to show notification on the app itself
             })
             .catch((error) => {
               console.log('Error sending message:', error);
@@ -129,10 +126,10 @@ export default function initMedRecordController(db) {
 
         return job;
       });
-      const stringifiedJobs = stringify(allJobs)
-      console.log(stringifiedJobs)
+      const stringifiedJobs = stringify(allJobs);
+      console.log(stringifiedJobs);
 
-      formattedFrequency.allCronJobs = stringifiedJobs
+      formattedFrequency.allCronJobs = stringifiedJobs;
 
       const newRecord = await db.MedicationRecord.create({
         medicationName,
@@ -144,7 +141,7 @@ export default function initMedRecordController(db) {
         userId: request.cookies.userId,
         medicationUnits: doseUnit,
       });
-  
+
       response.send({ newRecord });
     }
     catch (error) {
@@ -156,18 +153,19 @@ export default function initMedRecordController(db) {
     try {
       console.log(request.body);
       const {
-        medicationName, medDose, medQuantity, medInstructions, frequencyData, medTimings, doseUnit, id 
+        medicationName, medDose, medQuantity, medInstructions, frequencyData, medTimings, doseUnit, id,
       } = request.body;
 
-   
       const foundData = await db.MedicationRecord.findOne({
         where: {
-          id: id
+          id,
         },
       });
-      
+
+      console.log(foundData);
+
       // for end date stored as {ddEnd: , mmEnd: , yyEnd:}
-       const formattedFrequency = {
+      const formattedFrequency = {
         timing: [],
         days: '',
         weekDays: '',
@@ -175,7 +173,7 @@ export default function initMedRecordController(db) {
         endDate: convertDate(frequencyData?.endingDate),
         startDate: convertDate(frequencyData.startingDate),
         rawData: frequencyData,
-        allCronJobs: foundData.allCronJobs
+        allCronJobs: foundData.allCronJobs,
       };
 
       const formatedTime = medTimings.map((timing) => {
@@ -194,56 +192,39 @@ export default function initMedRecordController(db) {
 
       updateConsolidatedFreq(frequencyData, formattedFrequency, formatedTime);
 
-      const newRecord = await db.MedicationRecord.update(
-        { medicationName: medicationName},
-        { dose: medDose}, 
-        { quantity: medQuantity}, 
-        {specialInstructions: medInstructions,}, 
-        {   frequency: formattedFrequency,}, 
-        { doseTaken: doseTakenStatus,},
-        {  medicationUnits: doseUnit,},
-        {  where:{
-          id: id
-        }}
-      );
+      const cronJobs = JSON.parse(foundData.frequency.allCronJobs);
+      console.log(cronJobs, 'all cron');
 
-       const updatedDoseRecord = await db.MedicationRecord.update(
-        { doseTaken: doseStatus },
-        { where: { id: findChangedDoseRecord.id } },
-      );
+      const allMedSchedules = await formattedFrequency.timing.map((time) => cronExpressionFormatted(formattedFrequency, time));
 
-
-      const allMedSchedules = await newRecord.frequency.timing.map((time) => cronExpressionFormatted(newRecord.frequency, time));
-
-      // this is to create a cronjob for each of the timing
-      const allJobs = await allMedSchedules.map((schedule) => {
-        const job = new CronJob(schedule, (() => {
-          console.log(schedule);
-
-          const payload = {
-            notification: {
-              title: 'Medication Reminder',
-              body: `Reminder to take ${newRecord.medicationName}!`,
-            },
-          };
-          const options = {
-            priority: 'high',
-          };
-
-          admin.messaging().sendToDevice(userFCMToken.fcmToken, payload, options)
-            .then((res) => {
-              console.log('Successfully sent message:', res);
-              // when message is fired, to send medication record to the front end to show notification on the app itself
-            })
-            .catch((error) => {
-              console.log('Error sending message:', error);
-            });
-        }), null, true, 'Asia/Singapore');
-        job.start();
-
-        return job;
+      // to change the job timing
+      const editedJobs = allMedSchedules.map((schedule) => {
+        cronJobs.forEach((job) => job.cronTime = schedule);
+        return cronJobs;
       });
-      response.send({ newRecord });
+
+      console.log(editedJobs.flat(1));
+
+      formattedFrequency.allCronJobs = stringify(editedJobs);
+
+      const editedRecord = await db.MedicationRecord.update(
+        {
+          medicationName,
+          dose: medDose,
+          quantity: medQuantity,
+          specialInstructions: medInstructions,
+          frequency: formattedFrequency,
+          doseTaken: doseTakenStatus,
+          medicationUnits: doseUnit,
+        },
+        {
+          where: {
+            id,
+          },
+        },
+      );
+
+      response.send({ editedRecord });
     }
     catch (error) {
       console.log(error);
@@ -279,9 +260,14 @@ export default function initMedRecordController(db) {
       const doseStatus = findChangedDoseRecord.doseTaken;
       const timingOfMedDose = request.body.record.timeData.join(':');
       doseStatus[timingOfMedDose] = 'taken';
+      const medQuantity = Number(findChangedDoseRecord.quantity);
+      const finalQuantity = medQuantity - Number(findChangedDoseRecord.dose);
 
       const updatedDoseRecord = await db.MedicationRecord.update(
-        { doseTaken: doseStatus },
+        {
+          doseTaken: doseStatus,
+          quantity: finalQuantity,
+        },
         { where: { id: findChangedDoseRecord.id } },
       );
 
@@ -301,11 +287,9 @@ export default function initMedRecordController(db) {
         for (const doseTiming in medRecordData) {
           medRecordData[doseTiming] = '';
         }
-        const updatedQuery = db.MedicationRecord.update(
-          { doseTaken: medRecordData }, {
-            where: { id: record.id },
-          },
-        );
+        const updatedQuery = db.MedicationRecord.update({ doseTaken: medRecordData }, {
+          where: { id: record.id },
+        });
 
         return updatedQuery;
       });
@@ -322,10 +306,10 @@ export default function initMedRecordController(db) {
   const findEdit = async (request, response) => {
     try {
       const allMedRecords = await db.MedicationRecord.findOne({
-        where:{
-          id: request.params.id
-        }
-      })
+        where: {
+          id: request.params.id,
+        },
+      });
 
       response.send({ allMedRecords });
     }
@@ -333,8 +317,22 @@ export default function initMedRecordController(db) {
       console.log(error);
     }
   };
+  const deleteRecord = async (request, response) => {
+    try {
+      const removeRecord = await db.MedicationRecord.destroy({
+        where: {
+          id: request.params.id,
+        },
+      });
+
+      response.send({ removeRecord });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
 
   return {
-    addFormData, findAllMedRecord, changeDoseStatus, restartDoseStatus,findEdit,editFormData
+    addFormData, findAllMedRecord, changeDoseStatus, restartDoseStatus, findEdit, editFormData, deleteRecord,
   };
 }

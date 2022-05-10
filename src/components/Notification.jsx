@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useToast } from '@chakra-ui/react';
+import { useToast, Box } from '@chakra-ui/react';
 
 const convertTiming = (currentTime) => {
   let hour = currentTime.getHours();
@@ -19,7 +19,7 @@ function Notification({ medicationTodays }) {
     const timer = setInterval(() => {
       toast.closeAll();
       setDate(new Date());
-    }, 5000); return () => {
+    }, 10000); return () => {
       clearInterval(timer);
     };
   }, []);
@@ -34,6 +34,7 @@ function Notification({ medicationTodays }) {
       status: 'success',
       duration: 5000,
       isClosable: true,
+      position: 'top',
     })));
   }, [today]);
 

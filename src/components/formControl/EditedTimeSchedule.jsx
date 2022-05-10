@@ -5,17 +5,16 @@ import {
 import TimePicker from 'react-time-picker-input';
 import 'react-time-picker-input/dist/components/TimeInput.css';
 
-
 function EditedTimeSchedule({ medTimings, setMedTiming }) {
   const [timings, setTimings] = useState(['']);
-  console.log(medTimings)
+  console.log(medTimings);
 
   const addNewTiming = () => {
     const newAddedTimeArr = [...timings];
     newAddedTimeArr.push('');
-    console.log(newAddedTimeArr)
+    console.log(newAddedTimeArr);
     setTimings([...newAddedTimeArr]);
-    setMedTiming([...newAddedTimeArr])
+    setMedTiming([...newAddedTimeArr]);
   };
 
   const onTimingChange = (newTiming, index) => {
@@ -29,12 +28,12 @@ function EditedTimeSchedule({ medTimings, setMedTiming }) {
     const removedTiming = [...timings];
     removedTiming.pop();
     setTimings(removedTiming);
-    medTimings.pop()
-    setMedTiming(medTimings)
+    medTimings.pop();
+    setMedTiming(medTimings);
   };
 
   return (
-    <HStack>
+    <HStack className="timing-div">
       <Button onClick={addNewTiming}>
         +
       </Button>

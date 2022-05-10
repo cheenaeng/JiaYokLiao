@@ -1,7 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&family=Lobster&family=Montserrat:ital,wght@0,100;0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=Pacifico&family=Raleway:wght@400;700&family=Roboto:ital,wght@0,400;0,700;1,300&display=swap&family=Poor+Story&display=swap");
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  font-family: "Montserrat";
+  color: #2a6b70;
+  padding: 0;
+  margin: 0;
 }
 
 body {
@@ -24,4 +29,326 @@ body {
   background-color: #eda6aa;
   border-radius: 10px;
   color: #fafafa;
+}
+
+.main-box {
+  width: 100%;
+  height: 30vh;
+}
+
+.log-header {
+  font-family: "Montserrat";
+  font-weight: 800;
+}
+
+.user-button {
+  background-color: #2a6b70;
+  color: #f5f9fa;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.user-button:hover {
+  background-color: #85d3c7;
+  color: #2a6b70;
+}
+.progress-circle {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+}
+
+.left-circle-login,
+.right-circle-registration {
+  background-color: #2a6b70;
+}
+
+.right-circle-login,
+.left-circle-registration {
+  background-color: #e7f4f2;
+}
+
+.navbar-icon {
+  width: 2em;
+  height: 2em;
+  padding: 1vh;
+  font-size: 1.5em;
+}
+
+.nav-bar-bar {
+  width: 100%;
+  height: 52px;
+  position: fixed;
+  bottom: 0;
+  background-color: #edf2f6;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 2vh 1vh;
+}
+
+.nav-bar-bar button:hover {
+  background-color: transparent;
+  border: none;
+}
+
+.nav-bar-bar button:active {
+  background-color: transparent;
+  border: none;
+}
+
+.nav-bar-bar button:focus {
+  border: none;
+  background-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+.navbar-icon:hover {
+  background-color: #bde6deba;
+  border-radius: 50%;
+}
+
+.main-page-header {
+  font-family: Montserrat;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.add-button {
+  width: 2em;
+  height: 2em;
+  background-color: #ffdee1;
+  border-radius: 50%;
+  color: #988486;
+}
+
+.add-button:hover {
+  background-color: #eda6aa;
+  cursor: pointer;
+}
+
+.main-page-dates {
+  font-family: domine;
+  font-size: 1em;
+  width: 5vh;
+  max-width: 7vh;
+  border-color: #85d3c7;
+}
+
+.main-page-days {
+  font-weight: 700;
+  font-size: 1.2em;
+  width: 5vh;
+  max-width: 7vh;
+  border-color: #85d3c7;
+}
+
+.today-date-highlight {
+  background-color: #85d3c7;
+  border-bottom-left-radius: 70%;
+  border-bottom-right-radius: 70%;
+  border: none;
+  color: #e7f4f2;
+}
+
+.today-day-highlight {
+  background-color: #85d3c7;
+  border-top-left-radius: 70%;
+  border-top-right-radius: 70%;
+  border: none;
+}
+
+.weekly-view .all-dates {
+  display: flex;
+  justify-content: center;
+}
+
+.weekly-view {
+  border-style: none;
+}
+
+.main-page-sub-header {
+  text-transform: uppercase;
+}
+
+#reminder-header {
+  font-weight: 700;
+  font-size: 1.1em;
+}
+.medication-name-title {
+  font-weight: 800;
+  font-size: 1em;
+}
+
+.medication-timing-title,
+.medication-date-title,
+.medication-quantity-title,
+.medication-dose-title {
+  font-weight: 700;
+  font-size: 0.8em;
+}
+
+.medication-date-title {
+  color: #e7f4f2;
+}
+
+.list-medication-display {
+  background-color: #85d3c7;
+  border-radius: 1em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.taken-button {
+  background-color: #eda6aa;
+  border: 2px solid #e7f4f2;
+  padding: 1vh 1vh;
+}
+
+.taken-icon,
+.taken-icon * {
+  font-size: 1.5em;
+  padding: 0;
+  color: #e7f4f2;
+}
+
+.taken-button:hover .taken-icon * {
+  color: #2a6b70;
+}
+
+.form-main-header {
+  font-family: montserrat;
+  font-size: 1.6em;
+}
+
+.form-label {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 1vh 0vh;
+}
+
+.form-input-field {
+  background-color: #e9f0ef;
+}
+
+.date-picker-field {
+  padding: 2vh;
+}
+
+#start-date-field,
+#end-date-field {
+  padding: 1vh;
+  border-radius: 8px;
+}
+
+#start-date-field + .react-datepicker__close-icon {
+  margin-right: 11vh;
+}
+
+.react-datepicker__close-icon::after {
+  background-color: #2a6b70;
+}
+.days-buttons {
+  width: 15vw;
+}
+
+.timing-div {
+  padding: 2vh;
+  overflow-x: scroll;
+}
+
+.medication-list {
+  background-color: #e7f4f2;
+  border-radius: 10px;
+}
+
+.modify-icons-buttons {
+  background-color: transparent;
+  max-width: 5vh;
+  height: 5vh;
+}
+.modify-icons {
+  background-color: transparent;
+}
+
+.display-list-title {
+  font-weight: 500;
+}
+
+#indication-header {
+  font-weight: 600;
+  font-size: 1.5em;
+}
+
+.indication-box {
+  background-color: #eda6aa;
+  height: 6vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 5px;
+}
+
+.indication-box-text {
+  color: #23191a;
+  font-size: 0.6em;
+}
+
+.indication-box:hover {
+  background-color: #f5f8f2;
+  cursor: pointer;
+}
+
+#med-name-search-btn {
+  background-color: #2a6b70;
+  color: #e7f4f2;
+}
+
+.medication-detail-container {
+  background-color: #e9f0ef;
+}
+
+.display-title {
+  font-weight: 600;
+}
+
+.indication-box {
+  color: #e7f4f2;
+  font-size: 0.8em;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.indication-box-0,
+.indication-box-2,
+.indication-box-4 {
+  background-color: #eda6aa;
+}
+
+.indication-box-1,
+.indication-box-3,
+.indication-box-5 {
+  background-color: #e66a70;
+}
+
+.med-list-display {
+  border-radius: 1vh;
+}
+
+.search-name-field {
+  position: relative;
+}
+
+#clear-search {
+  position: absolute;
+  z-index: 1;
+  left: 65vw;
+}
+
+.proj-title {
+  text-transform: uppercase;
+  font-family: "montserrat";
+  font-size: 3em;
 }

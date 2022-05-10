@@ -4,7 +4,6 @@ import methodOverride from 'method-override';
 import bindRoutes from './routes.mjs';
 import admin from 'firebase-admin';
 import { applicationDefault } from 'firebase-admin/app';
-import axios from 'axios'
 
 import 'dotenv/config'
 
@@ -63,37 +62,7 @@ bindRoutes(app);
 const PORT = process.env.PORT || 3004;
 app.listen(PORT);
 
-var payload = {
-  notification: {
-    title: "Account Deposit",
-    body: "A deposit to your savings account has just cleared."
-  },
-  data: {
-    account: "Savings",
-    balance: "$3020.25"
-  }
-};
-
- var options = {
-  priority: "high",
-  timeToLive: 60 * 60 *24
-};
 admin.initializeApp({
   credential: applicationDefault(),
 });
 
-// axios.get('http://localhost:3004/allusers')
-// .then(response=>{
-//   const allUsersData = response.data.allUsers 
-//   const allUsersFcmData = allUsersData.map(data => data.fcmToken)
-//   allUsersFcmData.forEach(fcmToken =>{
-//     admin.messaging().sendToDevice(fcmToken, payload,options)
-//     .then(function(response) {
-//       console.log("Successfully sent message:", response);
-//     })
-//     .catch(function(error) {
-//       console.log("Error sending message:", error);
-//     })
-//   })
-// })
-// .catch(error=>console.log(error))

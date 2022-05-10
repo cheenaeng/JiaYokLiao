@@ -3,12 +3,14 @@ import db from './models/index.mjs';
 import initMedRecordController from './controlllers/medRecord.mjs';
 import initUser from './controlllers/user.mjs';
 import initMedDetails from './controlllers/MedDetails.mjs';
+import initIndications from './controlllers/Indications.mjs';
 
 export default function routes(app) {
   // special JS page. Include the webpack index.html file
   const MedRecord = initMedRecordController(db);
   const User = initUser(db);
   const MedDetails = initMedDetails(db);
+  const Indications = initIndications(db);
 
   app.get('/', (request, response) => {
     response.sendFile(resolve('dist', 'main.html'));
@@ -24,5 +26,7 @@ export default function routes(app) {
   app.put('/addFCMToken', User.addFCM);
   app.get('/allusers', User.getAllUser);
   app.get('/allMedDetails', MedDetails.findAllMedName);
-  app.get('/medicationEdit/:id', MedRecord.findEdit)
+  app.get('/medicationEdit/:id', MedRecord.findEdit);
+  app.delete('/record/:id', MedRecord.deleteRecord);
+  app.post('/findMedDetail', MedDetails.findDetail);
 }

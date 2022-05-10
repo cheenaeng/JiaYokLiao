@@ -1,10 +1,13 @@
 import React from 'react';
 import {
-  format, compareAsc, setDay,
+  format, setDay,
 } from 'date-fns';
-import { Grid, GridItem, Heading } from '@chakra-ui/react';
+import {
+  Grid, GridItem, Heading, Icon, Flex,
+} from '@chakra-ui/react';
+import { MdOutlineAdd } from 'react-icons/md';
 
-function WeeklySchedule() {
+function WeeklySchedule({ setUserFormView, setDashboardView }) {
   // get the dates of the current week and store in an array
 
   const datesInWeek = [];
@@ -16,29 +19,47 @@ function WeeklySchedule() {
     datesInWeek.push(date);
   }
 
-  const daysDate = datesInWeek.map((date) => (<GridItem rowSpan={1} colSpan={1} textAlign="center">{date.getDate()}</GridItem>));
-  const days = daysSpelled.map((day) => (
-    <GridItem rowSpan={1} colSpan={1} textAlign="center">
-      {day}
-    </GridItem>
+  const showTodayDate = todayDate.getDate();
+  const showTodayDay = todayDate.getDay();
+
+  const daysDate = datesInWeek.map((date) => (
+    <div className="all-dates">
+      <GridItem className={`main-page-dates ${showTodayDate === date.getDate() && 'today-date-highlight'}`} rowSpan={1} colSpan={1} textAlign="center">
+        {date.getDate()}
+      </GridItem>
+    </div>
+
+  ));
+  const days = daysSpelled.map((day, index) => (
+    <div className="all-dates">
+      <GridItem className={`main-page-days ${showTodayDay === index && 'today-day-highlight'}`} rowSpan={1} colSpan={1} textAlign="center">
+        {day}
+      </GridItem>
+    </div>
+
   ));
 
   const monthToday = format(todayDate, 'MMMM');
   const yearToday = format(todayDate, 'yyyy');
+  const seeForm = () => {
+    setUserFormView(true);
+    setDashboardView(false);
+  };
 
   return (
     <>
-      <Heading as="h1" size="2xl">
+      <Flex p={3} justify="end">
+        <Icon as={MdOutlineAdd} className="add-button" onClick={seeForm} />
+      </Flex>
+      <Heading as="h1" size="lg" className="main-page-header" pl={2}>
         {monthToday}
         {' '}
         {yearToday}
       </Heading>
-      <Grid templateColumns="repeat(7,1fr)" templateRows="repeat(2,1fr)">
-        {daysDate}
+      <Grid templateColumns="repeat(7,1fr)" templateRows="repeat(2,1fr)" className="weekly-view">
         {days}
+        {daysDate}
       </Grid>
-
-      <Heading as="h2" size="xl"> Today X medications</Heading>
     </>
   );
 }

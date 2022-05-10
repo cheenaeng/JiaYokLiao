@@ -39,7 +39,6 @@ db.MedicationDetail = initMedicationDetailModel(sequelize, Sequelize.DataTypes);
 db.User = initUserModel(sequelize, Sequelize.DataTypes);
 db.MedicationRecord = initMedicationRecordModel(sequelize, Sequelize.DataTypes);
 
-// one bill --> many people, one person --> one bill
 db.MedicationRecord.belongsTo(db.User);
 db.User.hasMany(db.MedicationRecord);
 
@@ -48,8 +47,8 @@ db.User.hasMany(db.MedicationRecord);
 // db.MedicationDetail.belongsTo(db.MedicationRecord);
 
 // indication and medication detail tables are linked by medication_indication table
-db.Indication.belongsToMany(db.MedicationDetail, { through: 'medication_indications' });
-db.MedicationDetail.belongsToMany(db.Indication, { through: 'medication_indications' });
+db.Indication.belongsToMany(db.MedicationDetail, { through: 'medication_details_indications' });
+db.MedicationDetail.belongsToMany(db.Indication, { through: 'medication_details_indications' });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

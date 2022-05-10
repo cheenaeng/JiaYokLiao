@@ -5,7 +5,6 @@ import {
 import TimePicker from 'react-time-picker-input';
 import 'react-time-picker-input/dist/components/TimeInput.css';
 
-
 function TimingScheduler({ medTimings, setMedTiming }) {
   const [timings, setTimings] = useState(['']);
 
@@ -29,7 +28,7 @@ function TimingScheduler({ medTimings, setMedTiming }) {
   };
 
   return (
-    <HStack>
+    <HStack className="timing-div">
       <Button onClick={addNewTiming}>
         +
       </Button>

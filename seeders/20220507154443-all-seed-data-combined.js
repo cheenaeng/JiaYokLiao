@@ -135,15 +135,201 @@ module.exports = {
 
     ];
 
-    const medicationsInfo = await queryInterface.bulkInsert(
+    const [atorvastatin, aspirin, clopidogrel, simvastatin, lovastatin, glipizide, metformin, linagliptin, empagliflozin, dapagliflozin, augmentin, amoxicillin, doxycycline, omeprazole, clarithromycin, warfarin, cholecalciferol] = await queryInterface.bulkInsert(
       'medication_details',
       medicationDetails,
       { returning: true },
     );
+
+    const indications = [
+      {
+        indication_detail: 'cholestrol control',
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_detail: 'prevention of coronary artery disease',
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_detail: 'acute care',
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_detail: 'diabetes control',
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_detail: 'high blood pressure management',
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_detail: 'others',
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+    ];
+
+    const [cholestrol, cad, acuteCare, diabetes, bloodPressure, others] = await queryInterface.bulkInsert(
+      'indications',
+      indications,
+      { returning: true },
+    );
+    const indicationMedDetail = [
+      // banana is a fruit
+      {
+        indication_id: cholestrol.id,
+        medication_detail_id: atorvastatin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: cad.id,
+        medication_detail_id: atorvastatin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: cholestrol.id,
+        medication_detail_id: aspirin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: cad.id,
+        medication_detail_id: aspirin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: cholestrol.id,
+        medication_detail_id: clopidogrel.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: cad.id,
+        medication_detail_id: clopidogrel.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: cholestrol.id,
+        medication_detail_id: simvastatin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+
+      {
+        indication_id: cad.id,
+        medication_detail_id: simvastatin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: cholestrol.id,
+        medication_detail_id: lovastatin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+
+      {
+        indication_id: cad.id,
+        medication_detail_id: lovastatin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: diabetes.id,
+        medication_detail_id: glipizide.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: diabetes.id,
+        medication_detail_id: metformin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: diabetes.id,
+        medication_detail_id: linagliptin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: diabetes.id,
+        medication_detail_id: empagliflozin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: diabetes.id,
+        medication_detail_id: dapagliflozin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: acuteCare.id,
+        medication_detail_id: augmentin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: acuteCare.id,
+        medication_detail_id: amoxicillin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: acuteCare.id,
+        medication_detail_id: doxycycline.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: acuteCare.id,
+        medication_detail_id: omeprazole.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: others.id,
+        medication_detail_id: omeprazole.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: acuteCare.id,
+        medication_detail_id: clarithromycin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: cad.id,
+        medication_detail_id: warfarin.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      {
+        indication_id: others.id,
+        medication_detail_id: cholecalciferol.id,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+
+    ];
+    await queryInterface.bulkInsert('medication_details_indications', indicationMedDetail);
   },
 
   down: async (queryInterface) => {
     // Delete item before category records because items reference categories
+    await queryInterface.bulkDelete('medication_details_indications', null, {});
+    await queryInterface.bulkDelete('indications', null, {});
     await queryInterface.bulkDelete('medication_details', null, {});
   },
 };

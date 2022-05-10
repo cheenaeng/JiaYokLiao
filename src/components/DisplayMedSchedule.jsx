@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { List, ListItem, Button } from '@chakra-ui/react';
+import {
+  List, ListItem, Button, Text, Badge, HStack, Heading, Box, Icon,
+} from '@chakra-ui/react';
 import { getDay, isAfter, differenceInDays } from 'date-fns';
-
+import { MdDone } from 'react-icons/md';
 import cron from 'cron';
 
 const { CronJob } = cron;
@@ -46,6 +48,7 @@ const checkTodaysMedicines = (record) => {
 
 function DisplayMedSchedule({ setMedRecords, medicationTodays, setTodayMedications }) {
   const [takenStatus, setTakenStatus] = useState(0);
+  const [todayRecords, setTodayRecords] = useState([]);
 
   useEffect(() => {
     axios.get('/allMeds').then((response) => {
@@ -53,7 +56,7 @@ function DisplayMedSchedule({ setMedRecords, medicationTodays, setTodayMedicatio
       const allData = response.data.allRecords;
 
       const medicineToday = allData.filter((medRecord) => checkTodaysMedicines(medRecord));
-
+      setTodayRecords(medicineToday);
       const individualTask = medicineToday.map((medicine) => {
         const eachTiming = medicine.frequency.timing.map((timeSchedule) => ({ ...medicine, timeData: [timeSchedule.hh, timeSchedule.mm] }));
         return eachTiming;
@@ -87,23 +90,69 @@ function DisplayMedSchedule({ setMedRecords, medicationTodays, setTodayMedicatio
     });
   }), null, true, 'Asia/Singapore');
   job.start();
+  console.log(medicationTodays, 'today');
 
   return (
-    <List>
-      {medicationTodays.map((med, index) => (
-        <ListItem spacing={3} border="1px" borderColor="gray.200" mb={3} p={2}>
-          <p>{med.medicationName}</p>
-          <p>
-            Scheduled Time:
-            {' '}
-            {med.timeData[0]}
-            {med.timeData[1]}
-          </p>
-          <Button onClick={(e) => { updateDoseStatus(e, index); }} isDisabled={true && med.doseTaken[med.timeData.join(':')] === 'taken'}> Taken</Button>
-        </ListItem>
-      ))}
-    </List>
+    <>
+      <Heading as="h2" size="md" className="main-page-sub-header" pl={2} pt={4}>
+        {' '}
+        Today
+        {' '}
+        {todayRecords.length}
+        {' '}
+        medications
+      </Heading>
+      <Text pl={2} pb={2} color="greenC.300" id="reminder-header"> Reminder</Text>
+      <List className="display-meds-all">
+        {medicationTodays.map((med, index) => (
+          <ListItem spacing={7} border="1px" borderColor="gray.200" mb={3} p={2} className="list-medication-display" boxShadow="md">
+            <Box>
+              <Text textTransform="capitalize" className="medication-name-title">{med.medicationName}</Text>
+              <Text className="medication-date-title">
+                {' '}
+                {med.frequency.startDate.dd}
+                /
+                {med.frequency.startDate.mm}
+                /
+                {med.frequency.startDate.yy}
+                {' '}
+                -
+                {med.frequency.endDate.dd ? `${med.frequency.endDate.dd}/${med.frequency.endDate.mm}/${med.frequency.endDate.yy}` : '(No end date)'}
+              </Text>
+              <Text className="medication-timing-title">
+                Scheduled Time:
+                {' '}
+                {med.timeData[0]}
+                {med.timeData[1]}
+              </Text>
 
+              <HStack className="medication-quantity-title">
+                <Text>Quantity:</Text>
+                {' '}
+                <Text color={Number(med.quantity) <= 10 && 'greenC.0'}>{med.quantity}</Text>
+                {Number(med.quantity <= 10)
+              && (
+              <Badge colorScheme="red">LOW</Badge>
+              )}
+              </HStack>
+              <Text className="medication-dose-title">
+                Dose:
+                Take/Use/Apply
+                {' '}
+                {med.dose}
+                {' '}
+                {med.medicationUnits}
+              </Text>
+            </Box>
+            <Box>
+              <Button onClick={(e) => { updateDoseStatus(e, index); }} isDisabled={true && med.doseTaken[med.timeData.join(':')] === 'taken'} mt={5} className="taken-button">
+                <Icon as={MdDone} className="taken-icon" />
+              </Button>
+            </Box>
+          </ListItem>
+        ))}
+      </List>
+    </>
   );
 }
 
