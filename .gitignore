@@ -8,8 +8,3 @@ node_modules/
 dist
 
 .env
-
-firebasePermission.js 
-
-firebase-messaging-sw.js
-
