@@ -4,7 +4,6 @@ import {
   Grid, GridItem, Select, Text, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Button,
 } from '@chakra-ui/react';
 import 'react-datepicker/dist/react-datepicker.css';
-import parseISO from 'date-fns/parseISO';
 
 function FrequencyScheduler({
   dates, setStartEndDates, frequencyInput, setFrequency, storedDays, setDays, endDateOption, selectEndOption,
