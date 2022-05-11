@@ -23,7 +23,6 @@ export default function Login({
 
     onSubmit: (values) => {
       // on submit will send a post request to database to register the user
-
       const userDetails = {
         email: values.email,
         password: values.password,

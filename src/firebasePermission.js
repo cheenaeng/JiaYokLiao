@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { getMessaging, getToken } from 'firebase/messaging';
+import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
 const firebaseConfig = {
