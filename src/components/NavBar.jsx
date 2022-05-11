@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  HStack, Icon, Button, Text, VStack,
+  HStack, Icon, Button,
 } from '@chakra-ui/react';
 import {
-  MdOutlineHome, MdEditNote, MdAddCircleOutline, MdOutlineLibraryAdd, MdOutlineLibraryBooks,
+  MdOutlineHome, MdEditNote, MdOutlineLibraryAdd, MdOutlineLibraryBooks,
 } from 'react-icons/md';
 
 function NavBar({
