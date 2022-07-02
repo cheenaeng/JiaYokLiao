@@ -28,3 +28,22 @@ For the project to run locally on your machine:
 <h4> 5. Scheduled notification appears </h4>
 <img src='https://user-images.githubusercontent.com/94110588/176987809-358a26e1-fc19-4e2c-9c3c-9cfd080f8b9b.png' alt='notification'/>
 
+## Built with 
+
+#### Frontend 
+- ReactJS 
+
+#### Backend 
+- NodeJs 
+- ExpressJs
+- Sequelize/Postgres 
+
+#### Functionalities 
+- Cron 
+- Firebase Cloud messaging 
+
+#### Styling
+- ChakraUI 
+
+## ERD 
+https://dbdiagram.io/d/6261578c1072ae0b6ac507e3
