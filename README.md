@@ -13,18 +13,18 @@ For the project to run locally on your machine:
 
 ## Walkthrough 
 <h4> 1. User login </h4>
-<div>![login1](https://user-images.githubusercontent.com/94110588/176987772-eb75272a-a926-43b5-943a-205fac946417.png)</div>
+<img src='https://user-images.githubusercontent.com/94110588/176987772-eb75272a-a926-43b5-943a-205fac946417.png' alt='login page' width='300'/>
 
 <h4> 2. Home page </h4>
-<div>![home2](https://user-images.githubusercontent.com/94110588/176987777-a409b974-5888-4906-8da0-0775124e1dc1.png))</div>
+<img src='https://user-images.githubusercontent.com/94110588/176987777-a409b974-5888-4906-8da0-0775124e1dc1.png' alt='home page' width='300'/>
 
-<h4> 3. Medication Recording form  </h4>
-<div>![form1](https://user-images.githubusercontent.com/94110588/176987788-27167496-a0ac-4812-9579-1068bf8b6b77.png))</div>
-<div>![form2](https://user-images.githubusercontent.com/94110588/176987790-80e11487-f74b-439e-bdd1-49e6ba7bd217.png)</div>
+<h4> 3. Medication Recording form  </h4>'
+<img src='https://user-images.githubusercontent.com/94110588/176987788-27167496-a0ac-4812-9579-1068bf8b6b77.png' alt='form' width='300'/>
+<img src='https://user-images.githubusercontent.com/94110588/176987790-80e11487-f74b-439e-bdd1-49e6ba7bd217.png' alt='form' width='300'/>
 
 <h4> 4. Medication library (For searching medications)  </h4>
-<div> ![library](https://user-images.githubusercontent.com/94110588/176987801-d685b42b-2138-4269-8ab9-0d3b67b6e5a0.png)</div>
+<img src='https://user-images.githubusercontent.com/94110588/176987801-d685b42b-2138-4269-8ab9-0d3b67b6e5a0.png' alt='library' width='300'/>
 
 <h4> 5. Scheduled notification appears </h4>
-<div>  ![notification](https://user-images.githubusercontent.com/94110588/176987809-358a26e1-fc19-4e2c-9c3c-9cfd080f8b9b.png)</div>
+<img src='https://user-images.githubusercontent.com/94110588/176987809-358a26e1-fc19-4e2c-9c3c-9cfd080f8b9b.png' alt='notification'/>
 
