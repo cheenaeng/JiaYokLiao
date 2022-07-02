@@ -33,8 +33,6 @@ export default function App() {
   const [medData, setMedData] = useState([]);
   const [userVerified, setVerification] = useState(true);
 
-  const [view, setViews] = useState('');
-
   const [registrationView, setRegistrationView] = useState(false);
   const [loginView, setLoginView] = useState(true);
   const [userFormView, setUserFormView] = useState(false);
