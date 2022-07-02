@@ -7,7 +7,6 @@ import { applicationDefault } from 'firebase-admin/app';
 
 import 'dotenv/config'
 
-
 // Initialise Express instance
 const app = express();
 // Set the Express view engine to expect EJS templates

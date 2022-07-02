@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { useEffect, useState } from 'react';
 import {
   ChakraProvider, Container, extendTheme, Box, Heading, Center,
@@ -29,14 +30,17 @@ export default function App() {
   });
   const [allMedRecords, setMedRecords] = useState([]);
   const [medicationTodays, setTodayMedications] = useState([]);
+  const [medData, setMedData] = useState([]);
   const [userVerified, setVerification] = useState(true);
+
+  const [view, setViews] = useState('');
+
   const [registrationView, setRegistrationView] = useState(false);
   const [loginView, setLoginView] = useState(true);
   const [userFormView, setUserFormView] = useState(false);
   const [dashboardView, setDashboardView] = useState(false);
   const [medDetailsView, setMedDetailsView] = useState(false);
   const [medListView, setMedListView] = useState(false);
-  const [medData, setMedData] = useState([]);
 
   useEffect(() => {
     axios.get('/allMedDetails')
@@ -54,7 +58,7 @@ export default function App() {
       </Center>
       ) }
       <Container p={5}>
-        {registrationView
+        {view
         && <Registration setRegistrationView={setRegistrationView} setLoginView={setLoginView} setVerification={setVerification} />}
         {loginView
         && <Login setVerification={setVerification} setDashboardView={setDashboardView} setRegistrationView={setRegistrationView} setLoginView={setLoginView} />}
