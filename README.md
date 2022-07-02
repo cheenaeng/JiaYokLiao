@@ -1,6 +1,3 @@
-This is an inidividual project that aims to incorporate REACT, nodeJS and postgresql 
-
-
 ## About 
 Jiayokliao is a medication reminder app that helps sets timely reminder to notify users to take their scheduled medications. This app is also linked to a database of medication details to provide useful information for users on certain medications they are taking. The app also records the quantity of medications users currently have and would remind users when the quantity goes low. 
 
