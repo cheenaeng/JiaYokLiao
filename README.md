@@ -47,3 +47,6 @@ For the project to run locally on your machine:
 
 ## ERD 
 https://dbdiagram.io/d/6261578c1072ae0b6ac507e3
+
+## Contact
+Cheena - cheena94sing@gmail.com 
